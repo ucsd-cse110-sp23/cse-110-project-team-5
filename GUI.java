@@ -29,44 +29,46 @@ import java.io.File;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
-class Task extends JPanel {
+class Question extends JPanel {
 
   JLabel index;
-  JTextField taskName;
-  JButton doneButton;
+  JTextField questionName;
+  JButton trashCanButton;
 
   Color gray = new Color(218, 229, 234);
   Color green = new Color(188, 226, 158);
 
-  private boolean markedDone;
-
-  Task() {
+  Question() {
     this.setPreferredSize(new Dimension(400, 20)); // set size of task
     this.setBackground(gray); // set background color of task
     this.setLayout(new BorderLayout()); // set layout of task
 
-    markedDone = false;
 
     index = new JLabel(""); // create index label
     index.setPreferredSize(new Dimension(20, 20)); // set size of index label
     index.setHorizontalAlignment(JLabel.CENTER); // set alignment of index label
     this.add(index, BorderLayout.WEST); // add index label to task
 
-    taskName = new JTextField(""); // create task name text field
-    taskName.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
-    taskName.setBackground(gray); // set background color of text field
+    questionName = new JTextField(""); // create task name text field
+    questionName.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
+    questionName.setBackground(gray); // set background color of text field
 
-    this.add(taskName, BorderLayout.CENTER);
+    this.add(questionName, BorderLayout.CENTER);
 
-    doneButton = new JButton("Done");
-    doneButton.setPreferredSize(new Dimension(80, 20));
-    doneButton.setBorder(BorderFactory.createEmptyBorder());
-    doneButton.setFocusPainted(false);
 
-    this.add(doneButton, BorderLayout.EAST);
+    trashCanButton = new JButton();
+    try {
+      Image img = ImageIO.read(getClass().getResource("trashCanIcon.jpeg"));
+      trashCanButton.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
+    }
+
+    this.add(trashCanButton, BorderLayout.EAST);
   }
 
   public void changeIndex(int num) {
@@ -74,31 +76,14 @@ class Task extends JPanel {
     this.revalidate(); // refresh
   }
 
-  public JButton getDone() {
-    return doneButton;
-  }
-
-  public boolean getState() {
-    return markedDone;
-  }
-
-  public void changeState() {
-    if(getState()) {
-      this.setBackground(gray);
-      taskName.setBackground(gray);
-      markedDone = false;
-    } else {
-      this.setBackground(green);
-      taskName.setBackground(green);
-      markedDone = true;
-    }
-    revalidate();
+  public JButton getTrashCan() {
+    return trashCanButton;
   }
 }
 
 class List extends JPanel {
 
-  Color backgroundColor = new Color(50, 50, 50);
+  Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
   List() {
     GridLayout layout = new GridLayout(10, 1);
@@ -113,19 +98,18 @@ class List extends JPanel {
     Component[] listItems = this.getComponents();
 
     for (int i = 0; i < listItems.length; i++) {
-      if (listItems[i] instanceof Task) {
-        ((Task) listItems[i]).changeIndex(i + 1);
+      if (listItems[i] instanceof Question) {
+        ((Question) listItems[i]).changeIndex(i + 1);
       }
     }
   }
 
-  public void removeCompletedTasks() {
+
+  public void clearAllQuestions() {
     for (Component c : getComponents()) {
-      if (c instanceof Task) {
-        if (((Task) c).getState()) {
-          remove(c); // remove the component
-          updateNumbers(); // update the indexing of all items
-        }
+      if (c instanceof Question) {
+        remove(c); // remove the component
+        updateNumbers(); // update the indexing of all items
       }
     }
   }
@@ -134,16 +118,16 @@ class List extends JPanel {
    * Loads tasks from a file called "tasks.txt"
    * @return an ArrayList of Task
    */
-  public ArrayList<Task> loadTasks() {
-    File file = new File("tasks.txt");
+  public ArrayList<Question> loadQuestions() {
+    File file = new File("Questions.txt");
     try (BufferedReader br = new BufferedReader(new FileReader(file))) {
         String line;
-        ArrayList<Task> result = new ArrayList<Task>();  
+        ArrayList<Question> result = new ArrayList<Question>();  
         while ((line = br.readLine()) != null) {
-          Task task = new Task();
-          task.taskName.setText(line);
-          result.add(task);
-          this.add(task);
+          Question question = new Question();
+          question.questionName.setText(line);
+          result.add(question);
+          this.add(question);
         }
         br.close();
         this.updateNumbers(); // Updates the numbers of the tasks
@@ -152,27 +136,22 @@ class List extends JPanel {
     } catch (IOException e) {
         e.printStackTrace();
     }
-    // hint 1: use try-catch block
-    // hint 2: use BufferedReader and FileReader
-    // hint 3: task.taskName.setText(line) sets the text of the task
-    System.out.println("loadTasks() not implemented");
+
     return null;
   }
 
-  // TODO: Complete this method
+
   /**
    * Saves tasks to a file called "tasks.txt"
    */
-  public void saveTasks() {
-    // hint 1: use try-catch block
-    // hint 2: use FileWriter
-    // hint 3 get list of Tasks using this.getComponents()
-    try (FileWriter fw = new FileWriter("tasks.txt")) {
+  public void saveQuestions() {
+    
+    try (FileWriter fw = new FileWriter("Questions.txt")) {
       Component[] listItems = this.getComponents();
 
       for (int i = 0; i < listItems.length; i++) {
-        if (listItems[i] instanceof Task) {
-          fw.write(((Task) listItems[i]).taskName.getText() + '\n');
+        if (listItems[i] instanceof Question) {
+          fw.write(((Question) listItems[i]).questionName.getText() + '\n');
         }
       }
       fw.close();
@@ -180,16 +159,12 @@ class List extends JPanel {
 
     }
     
-    System.out.println("saveTasks() not implemented");
   }
 }
 
 class Footer extends JPanel {
 
   JButton recordButton;
-
-  // TODO: Add a JButton called "loadButton" to load tasks from a file
-  // TODO: Add a JButton called "saveButton" to save tasks to a file
 
   Color foregroundColor = new Color(200, 200, 200);
   Color backgroundColor = new Color(50, 50, 50);
@@ -200,7 +175,6 @@ class Footer extends JPanel {
   Footer() {
     this.setPreferredSize(new Dimension(400, 60));
     this.setBackground(backgroundColor);
-    // TODO: Set the layout of the footer to a GridLayout with 1 row and 4 columns
 
     recordButton = new JButton("<html><p style='text-align:center;'>Ask Question</p></html>");
     recordButton.setHorizontalAlignment(SwingConstants.CENTER);
@@ -225,6 +199,8 @@ class Header extends JPanel {
   Color foregroundColor = new Color(200, 200, 200);
   Color backgroundColor = new Color(50, 50, 50);
 
+  JButton clearAllButton;
+
   Header() {
     //nested panel in header for more control
     JPanel nestedPanel = new JPanel(new BorderLayout());
@@ -241,7 +217,7 @@ class Header extends JPanel {
     nestedPanel.add(titleText, BorderLayout.CENTER);
 
     // create the clear all button for the last 1/4 of the header
-    JButton clearAllButton = new JButton("<html><p style='text-align:center;'>Clear<br>All</p></html>");
+    clearAllButton = new JButton("<html><p style='text-align:center;'>Clear<br>All</p></html>");
     clearAllButton.setHorizontalAlignment(SwingConstants.CENTER);
     clearAllButton.setVerticalAlignment(SwingConstants.CENTER);
     clearAllButton.setFont(new Font("Sans-serif", Font.BOLD, 12));
@@ -269,6 +245,7 @@ class AppFrame extends JFrame {
   private Footer footer;
   private List list;
 
+  private JButton clearAllButton;
   private JButton recordButton;
   private JButton clearAllButton;
 
@@ -289,7 +266,10 @@ class AppFrame extends JFrame {
 
     recordButton = footer.getRecordButton();
     clearAllButton = header.getClearAllButton();
+<<<<<<< HEAD
 
+=======
+>>>>>>> variant
 
     addListeners();
     revalidate();
@@ -299,10 +279,23 @@ class AppFrame extends JFrame {
 
     recordButton.addActionListener (
         (ActionEvent e) -> {
-            Task currTask = new Task();
-            currTask.taskName.setText("How did dinosaurs get here?");
-            list.add(currTask);
+            Question question = new Question();
+            question.questionName.setText("How did dinosaurs get here?");
+            list.add(question);
             list.updateNumbers();
+
+            JButton trashCanButton = question.getTrashCan();
+            trashCanButton.addMouseListener(
+              new MouseAdapter() {
+                @override
+                public void mousePressed(MouseEvent e) {
+                  list.remove(question);
+                  list.updateNumbers(); // Updates the numbers of the tasks
+                  revalidate(); // Updates the frame
+                }
+              }
+            );
+
         }
     );
 
@@ -310,6 +303,7 @@ class AppFrame extends JFrame {
       new MouseAdapter(){
         @override
         public void mousePressed(MouseEvent e) {
+<<<<<<< HEAD
           list.removeCompletedTasks();
         }
       }
@@ -317,6 +311,12 @@ class AppFrame extends JFrame {
 
 
 
+=======
+          list.clearAllQuestions();
+        }
+      }
+    );
+>>>>>>> variant
   }
 }
 
