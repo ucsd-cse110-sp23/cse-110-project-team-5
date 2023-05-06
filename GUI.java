@@ -62,7 +62,7 @@ class Question extends JPanel {
 
     trashCanButton = new JButton();
     try {
-      Image img = ImageIO.read(getClass().getResource("trashCanIcon.jpeg"));
+      Image img = ImageIO.read(getClass().getResource("trashCanIcon.jpeg")).getScaledInstance(35, 35, Image.SCALE_DEFAULT);;
       trashCanButton.setIcon(new ImageIcon(img));
     } catch (Exception ex) {
       System.out.println(ex);
@@ -110,8 +110,15 @@ class List extends JPanel {
       if (c instanceof Question) {
         remove(c); // remove the component
         updateNumbers(); // update the indexing of all items
+        revalidate();
       }
     }
+  }
+
+  public void removeSingle(Component x){
+    remove(x);
+    updateNumbers();
+    revalidate();
   }
 
   /**
@@ -199,8 +206,6 @@ class Header extends JPanel {
   Color foregroundColor = new Color(200, 200, 200);
   Color backgroundColor = new Color(50, 50, 50);
 
-  JButton clearAllButton;
-
   Header() {
     //nested panel in header for more control
     JPanel nestedPanel = new JPanel(new BorderLayout());
@@ -247,7 +252,6 @@ class AppFrame extends JFrame {
 
   private JButton clearAllButton;
   private JButton recordButton;
-  private JButton clearAllButton;
 
   AppFrame() {
 
@@ -266,10 +270,6 @@ class AppFrame extends JFrame {
 
     recordButton = footer.getRecordButton();
     clearAllButton = header.getClearAllButton();
-<<<<<<< HEAD
-
-=======
->>>>>>> variant
 
     addListeners();
     revalidate();
@@ -277,46 +277,39 @@ class AppFrame extends JFrame {
 
   public void addListeners() {
 
-    recordButton.addActionListener (
-        (ActionEvent e) -> {
+    recordButton.addMouseListener (
+      new MouseAdapter() {
+        @override
+        public void mousePressed(MouseEvent e) {
             Question question = new Question();
-            question.questionName.setText("How did dinosaurs get here?");
             list.add(question);
             list.updateNumbers();
+            revalidate();
 
             JButton trashCanButton = question.getTrashCan();
             trashCanButton.addMouseListener(
               new MouseAdapter() {
                 @override
                 public void mousePressed(MouseEvent e) {
-                  list.remove(question);
-                  list.updateNumbers(); // Updates the numbers of the tasks
-                  revalidate(); // Updates the frame
+                  list.removeSingle(question);
+                  repaint(); // Updates the frame
                 }
               }
             );
 
         }
+      }
     );
 
     clearAllButton.addMouseListener(
       new MouseAdapter(){
         @override
         public void mousePressed(MouseEvent e) {
-<<<<<<< HEAD
-          list.removeCompletedTasks();
-        }
-      }
-    );
-
-
-
-=======
           list.clearAllQuestions();
+          repaint();
         }
       }
     );
->>>>>>> variant
   }
 }
 
