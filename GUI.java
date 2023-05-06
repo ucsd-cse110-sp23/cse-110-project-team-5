@@ -220,6 +220,8 @@ class Footer extends JPanel {
 
 class Header extends JPanel {
 
+  JButton clearAllButton;
+  
   Color foregroundColor = new Color(200, 200, 200);
   Color backgroundColor = new Color(50, 50, 50);
 
@@ -253,6 +255,10 @@ class Header extends JPanel {
     this.setPreferredSize(new Dimension(400, 60)); // Size of the header
     this.setBackground(backgroundColor);
   }
+
+  public JButton getClearAllButton() {
+    return clearAllButton;
+  }
 }
 
 class AppFrame extends JFrame {
@@ -264,6 +270,7 @@ class AppFrame extends JFrame {
   private List list;
 
   private JButton recordButton;
+  private JButton clearAllButton;
 
   AppFrame() {
 
@@ -281,6 +288,8 @@ class AppFrame extends JFrame {
     this.add(list, BorderLayout.CENTER); // Add list in middle of footer and title
 
     recordButton = footer.getRecordButton();
+    clearAllButton = header.getClearAllButton();
+
 
     addListeners();
     revalidate();
@@ -296,6 +305,17 @@ class AppFrame extends JFrame {
             list.updateNumbers();
         }
     );
+
+    clearAllButton.addMouseListener(
+      new MouseAdapter(){
+        @override
+        public void mousePressed(MouseEvent e) {
+          list.removeCompletedTasks();
+        }
+      }
+    );
+
+
 
   }
 }
