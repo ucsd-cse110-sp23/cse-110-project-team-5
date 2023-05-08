@@ -33,29 +33,30 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
+
 class Question extends JPanel {
 
   JLabel index;
   JTextField questionName;
   JButton trashCanButton;
 
-  Color gray = new Color(218, 229, 234);
+  Color backgroundColor = new Color(100, 100, 100);  // Dark gray
   Color green = new Color(188, 226, 158);
 
   Question() {
-    this.setPreferredSize(new Dimension(400, 20)); // set size of task
-    this.setBackground(gray); // set background color of task
-    this.setLayout(new BorderLayout()); // set layout of task
+    this.setPreferredSize(new Dimension(400, 20)); // set size of question
+    this.setBackground(backgroundColor); // set background color of question
+    this.setLayout(new BorderLayout()); // set layout of question
 
 
     index = new JLabel(""); // create index label
     index.setPreferredSize(new Dimension(20, 20)); // set size of index label
     index.setHorizontalAlignment(JLabel.CENTER); // set alignment of index label
-    this.add(index, BorderLayout.WEST); // add index label to task
+    this.add(index, BorderLayout.WEST); // add index label to question
 
-    questionName = new JTextField(""); // create task name text field
+    questionName = new JTextField(""); // create question name text field
     questionName.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
-    questionName.setBackground(gray); // set background color of text field
+    questionName.setBackground(backgroundColor); // set background color of text field
 
     this.add(questionName, BorderLayout.CENTER);
 
@@ -68,6 +69,7 @@ class Question extends JPanel {
       System.out.println(ex);
     }
 
+    trashCanButton.setBackground(backgroundColor);
     this.add(trashCanButton, BorderLayout.EAST);
   }
 
@@ -89,7 +91,7 @@ class List extends JPanel {
     GridLayout layout = new GridLayout(10, 1);
     layout.setVgap(5); // Vertical gap
 
-    this.setLayout(layout); // 10 tasks
+    this.setLayout(layout); // 10 questions
     this.setPreferredSize(new Dimension(400, 560));
     this.setBackground(backgroundColor);
   }
@@ -122,8 +124,8 @@ class List extends JPanel {
   }
 
   /**
-   * Loads tasks from a file called "tasks.txt"
-   * @return an ArrayList of Task
+   * Loads questions from a file called "questions.txt"
+   * @return an ArrayList of question
    */
   public ArrayList<Question> loadQuestions() {
     File file = new File("Questions.txt");
@@ -137,7 +139,7 @@ class List extends JPanel {
           this.add(question);
         }
         br.close();
-        this.updateNumbers(); // Updates the numbers of the tasks
+        this.updateNumbers(); // Updates the numbers of the questions
         revalidate();
         return result;
     } catch (IOException e) {
@@ -149,7 +151,7 @@ class List extends JPanel {
 
 
   /**
-   * Saves tasks to a file called "tasks.txt"
+   * Saves questions to a file called "questions.txt"
    */
   public void saveQuestions() {
     
