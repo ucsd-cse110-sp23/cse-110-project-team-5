@@ -20,7 +20,7 @@ public class Record {
      */
     private float sampleRate = 44100;
     private int sampleSizeInBits = 16;
-    private int channels = 2;
+    private int channels = 1;
     private boolean signed = true;
     private boolean bigEndian = false;
     private AudioFormat audioFormat = new AudioFormat(

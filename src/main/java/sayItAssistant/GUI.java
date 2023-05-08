@@ -306,15 +306,20 @@ class AppFrame extends JFrame {
               }
             }
           );
-          String questionTranscription = API.transcribe();
-          question.questionName.setText(questionTranscription);
+          try {
+            String questionTranscription = API.transcribe();
+            question.questionName.setText(questionTranscription);
 
-          Question answer = new Question();
-          list.add(answer);
-          list.updateNumbers();
-          revalidate();
-          String answerText = API.ask(questionTranscription);
-          answer.questionName.setText(answerText);
+            Question answer = new Question();
+            list.add(answer);
+            list.updateNumbers();
+            revalidate();
+            String answerText = API.ask(questionTranscription);
+            answer.questionName.setText(answerText);
+          } catch (Exception w) {
+
+          }
+          
         }
       }
     );
