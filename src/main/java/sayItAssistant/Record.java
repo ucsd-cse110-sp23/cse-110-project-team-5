@@ -8,6 +8,9 @@ public class Record {
     // the file that will contain the audio data
     private static String recordingFileName = "newQuestion.wav";
 
+    //thread so no crash
+    private Thread t;
+
     /* 
      * sampleRate = # samples of audio per second.
      * sampleSizeInBits = # bits in each sample of a sound that has been digitized.
@@ -40,25 +43,30 @@ public class Record {
     * Starts recording the new question
     */
     public void startRecording() {
-        try {
-            // the format of the TargetDataLine
-            DataLine.Info dataLineInfo = new DataLine.Info(
-            TargetDataLine.class,
-            audioFormat
-            );
-            // the TargetDataLine used to capture audio data from the microphone
-            targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            targetDataLine.open(audioFormat);
-            targetDataLine.start();
+        t = new Thread(
+            () -> {
+                try {
+                    // the format of the TargetDataLine
+                    DataLine.Info dataLineInfo = new DataLine.Info(
+                    TargetDataLine.class,
+                    audioFormat
+                    );
+                    // the TargetDataLine used to capture audio data from the microphone
+                    targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+                    targetDataLine.open(audioFormat);
+                    targetDataLine.start();
 
-            // the AudioInputStream that will be used to write the audio data to a file
-            AudioInputStream audioInputStream = new AudioInputStream(targetDataLine);
+                    // the AudioInputStream that will be used to write the audio data to a file
+                    AudioInputStream audioInputStream = new AudioInputStream(targetDataLine);
 
-            File audioFile = new File(recordingFileName);
-            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, audioFile);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+                    File audioFile = new File(recordingFileName);
+                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, audioFile);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        );
+        t.start();
     }
 
     /*

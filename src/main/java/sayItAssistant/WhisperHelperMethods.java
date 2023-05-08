@@ -10,14 +10,14 @@ import java.net.URL;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-public class Whisper {
+public class WhisperHelperMethods {
+
     private static final String API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
-    private static final String TOKEN = "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";
+    private static final String TOKEN = "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";
     private static final String MODEL = "whisper-1";
 
-
     // Helper method to write a parameter to the output stream in multipart form data format
-private static void writeParameterToOutputStream(
+    private static void writeParameterToOutputStream(
     OutputStream outputStream,
     String parameterName,
     String parameterValue,
@@ -58,7 +58,7 @@ private static void writeParameterToOutputStream(
 
     }
 
-    private static String handleSuccessResponse(HttpURLConnection connection)
+    private static void handleSuccessResponse(HttpURLConnection connection)
         throws IOException, JSONException {
         BufferedReader in = new BufferedReader(
         new InputStreamReader(connection.getInputStream())
@@ -74,7 +74,7 @@ private static void writeParameterToOutputStream(
 
         String generatedText = responseJson.getString("text");
 
-        return generatedText;
+        System.out.println("Transcription Result: " + generatedText);
     }
 
     private static void handleErrorResponse(HttpURLConnection connection) 
@@ -91,47 +91,6 @@ private static void writeParameterToOutputStream(
         errorReader.close();
         String errorResult = errorResponse.toString();
         System.out.println("Error Result: " + errorResult);
-    }
-
-    public static String getQuestion() throws IOException {
-        String fileName = Record.getRecordingFileName();
-        File file = new File(fileName);
-        URL url = new URL(API_ENDPOINT);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        String boundary = "Boundary-" + System.currentTimeMillis();
-        connection.setRequestProperty(
-        "Content-Type",
-        "multipart/form-data; boundary=" + boundary
-        );
-        connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
-        
-        OutputStream outputStream = connection.getOutputStream();
-        
-        writeParameterToOutputStream(outputStream, "model", MODEL, boundary);
-        
-        writeFileToOutputStream(outputStream, file, boundary);
-
-        outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
-
-        outputStream.flush();
-        outputStream.close();
-
-        int responseCode = connection.getResponseCode();
-
-        String questionTranscription = "couldn't get da quesiton";
-
-        if (responseCode ==  HttpURLConnection.HTTP_OK) {
-            questionTranscription = handleSuccessResponse(connection);
-        } else {
-            handleErrorResponse(connection);
-        }
-
-        connection.disconnect();
-
-        System.out.println(questionTranscription);
-        return questionTranscription;
     }
 
 }

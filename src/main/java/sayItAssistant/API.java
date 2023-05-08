@@ -21,17 +21,13 @@ public class API {
      * Transcribes the new question with Whisper
      */
     String transcribe() throws IOException, InterruptedException {
-
-        String recordingFileName = Record.getRecordingFileName();
-
-        return Whisper.questionTranscription();
+        return Whisper.getQuestion();
     }
 
     /*
      * Answers the new question with ChatGPT
      */
-    String ask(String questionTranscription) {
-
-        return ChatGPT.getAnswer();
+    String ask(String questionTranscription) throws IOException, InterruptedException {
+        return ChatGPT.getAnswer(transcribe());
     }
 }

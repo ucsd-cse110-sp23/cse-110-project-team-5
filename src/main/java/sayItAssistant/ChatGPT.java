@@ -18,12 +18,10 @@ import org.json.JSONException;
 public class ChatGPT {
 
     private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
     private static final String MODEL = "text-davinci-003";
 
     public static String getAnswer(String questionTranscription) throws IOException, InterruptedException {
-
-
         //String questionTranscription is the prompt
         String prompt = questionTranscription;
         //int maxTokens = 100; No max tokens specified thus far
@@ -61,6 +59,7 @@ public class ChatGPT {
         JSONArray choices = responseJson.getJSONArray("choices");
         String answerText = choices.getJSONObject(0).getString("text");
 
+        System.out.println(answerText);
         return answerText;
     }
 }

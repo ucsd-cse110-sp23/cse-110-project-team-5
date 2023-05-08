@@ -1,3 +1,4 @@
+package src.main.java.sayItAssistant;
 /**
  * This code was refactored from the original code found at:
  * https://copyassignment.com/to-do-list-app-in-java/
@@ -63,7 +64,7 @@ class Question extends JPanel {
 
     trashCanButton = new JButton();
     try {
-      Image img = ImageIO.read(getClass().getResource("trashCanIcon.jpeg")).getScaledInstance(35, 35, Image.SCALE_DEFAULT);;
+      Image img = ImageIO.read(getClass().getResource("../../../static/trashCanIcon.jpeg")).getScaledInstance(35, 35, Image.SCALE_DEFAULT);;
       trashCanButton.setIcon(new ImageIcon(img));
     } catch (Exception ex) {
       System.out.println(ex);
@@ -278,15 +279,19 @@ class AppFrame extends JFrame {
   }
 
   public void addListeners() {
-
+    Record recorder = new Record();
+    
     recordButton.addMouseListener (
       new MouseAdapter() {
-        @override
+        @Override
         public void mousePressed(MouseEvent e) {
             Question question = new Question();
             list.add(question);
             list.updateNumbers();
             revalidate();
+
+            
+            recorder.startRecording();
 
             JButton trashCanButton = question.getTrashCan();
             trashCanButton.addMouseListener(
@@ -299,6 +304,11 @@ class AppFrame extends JFrame {
               }
             );
 
+        }
+        
+        @Override
+        public void mouseReleased(MouseEvent e) {
+          recorder.stopRecording();
         }
       }
     );
