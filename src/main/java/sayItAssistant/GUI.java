@@ -307,7 +307,7 @@ class AppFrame extends JFrame {
             }
           );
           try {
-            String questionTranscription = API.transcribe();
+            String questionTranscription = Whisper.getQuestion();
             question.questionName.setText(questionTranscription);
 
             Question answer = new Question();
@@ -325,7 +325,7 @@ class AppFrame extends JFrame {
               }
             );
 
-            String answerText = API.ask(questionTranscription);
+            String answerText = ChatGPT.getAnswer(questionTranscription);
             answer.questionName.setText(answerText);
           } catch (Exception w) {
 

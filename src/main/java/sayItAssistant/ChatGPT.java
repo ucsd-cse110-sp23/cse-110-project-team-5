@@ -24,13 +24,13 @@ public class ChatGPT {
     public static String getAnswer(String questionTranscription) throws IOException, InterruptedException {
         //String questionTranscription is the prompt
         String prompt = questionTranscription;
-        //int maxTokens = 100; No max tokens specified thus far
+        int maxTokens = 100;
 
         // Create a request body which you will pass into request object
         JSONObject requestBody = new JSONObject();
         requestBody.put("model", MODEL);
         requestBody.put("prompt", prompt);
-        //requestBody.put("max_tokens", maxTokens);
+        requestBody.put("max_tokens", maxTokens);
         requestBody.put("temperature", 1.0);
 
         // Create the HTTP client

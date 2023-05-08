@@ -10,9 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class Tests {
     @Test
     void testSum() {
-        int a = 9;
-        int b = 1;
+        int a = 8;
+        int b = 2;
 
         assertEquals(10, a+b);
     }
+
+    @Test
+    void 
 }
