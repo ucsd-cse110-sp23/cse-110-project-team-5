@@ -105,7 +105,8 @@ private static void writeParameterToOutputStream(
         "Content-Type",
         "multipart/form-data; boundary=" + boundary
         );
-        connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+        //connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+        connection.setRequestProperty("Authorization", "Bearer " + "mock_api_key"); //mock api key
         
         OutputStream outputStream = connection.getOutputStream();
         
@@ -120,7 +121,7 @@ private static void writeParameterToOutputStream(
 
         int responseCode = connection.getResponseCode();
 
-        String questionTranscription = "couldn't get da quesiton";
+        String questionTranscription = "Is this a mock question?";
 
         if (responseCode ==  HttpURLConnection.HTTP_OK) {
             questionTranscription = handleSuccessResponse(connection);
