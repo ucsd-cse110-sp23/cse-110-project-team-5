@@ -8,7 +8,7 @@ import javax.sound.sampled.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class API {
+public class recordAPI {
 
     private String recordingFileName = "new_question.wav";
 
