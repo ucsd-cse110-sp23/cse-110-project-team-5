@@ -285,30 +285,36 @@ class AppFrame extends JFrame {
       new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
-            Question question = new Question();
-            list.add(question);
-            list.updateNumbers();
-            revalidate();
-
-            
             recorder.startRecording();
-
-            JButton trashCanButton = question.getTrashCan();
-            trashCanButton.addMouseListener(
-              new MouseAdapter() {
-                @override
-                public void mousePressed(MouseEvent e) {
-                  list.removeSingle(question);
-                  repaint(); // Updates the frame
-                }
-              }
-            );
-
         }
         
         @Override
         public void mouseReleased(MouseEvent e) {
           recorder.stopRecording();
+
+          Question question = new Question();
+          list.add(question);
+          list.updateNumbers();
+          revalidate();
+          JButton trashCanButton = question.getTrashCan();
+          trashCanButton.addMouseListener(
+            new MouseAdapter() {
+              @override
+              public void mousePressed(MouseEvent e) {
+                list.removeSingle(question);
+                repaint(); // Updates the frame
+              }
+            }
+          );
+          String questionTranscription = API.transcribe();
+          question.questionName.setText(questionTranscription);
+
+          Question answer = new Question();
+          list.add(answer);
+          list.updateNumbers();
+          revalidate();
+          String answerText = API.ask(questionTranscription);
+          answer.questionName.setText(answerText);
         }
       }
     );

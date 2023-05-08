@@ -20,14 +20,14 @@ public class API {
     /*
      * Transcribes the new question with Whisper
      */
-    String transcribe() throws IOException, InterruptedException {
+    static String transcribe() throws IOException, InterruptedException {
         return Whisper.getQuestion();
     }
 
     /*
      * Answers the new question with ChatGPT
      */
-    String ask(String questionTranscription) throws IOException, InterruptedException {
+    static String ask(String questionTranscription) throws IOException, InterruptedException {
         return ChatGPT.getAnswer(transcribe());
     }
 }
