@@ -188,6 +188,7 @@ class Footer extends JPanel {
 
     recordButton = new JButton("<html><p style='text-align:center;'>Ask Question</p></html>");
     recordButton.setOpaque(true);
+    recordButton.setBorderPainted(false);
     recordButton.setHorizontalAlignment(SwingConstants.CENTER);
     recordButton.setFont(new Font("Sans-serif", Font.BOLD, 18));
     recordButton.setBackground(red);
