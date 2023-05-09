@@ -78,6 +78,22 @@ public class Tests {
         Component[] listItems = l.getComponents();
         assertEquals(0, listItems.length);
     }
+    
+    @Test
+    void testUserStory32() {
+        //User has prompt History
+        //Given that the user has opened the app
+        //When the user has prompt history
+        //Then the user will see their past questions,
+        //Along with the clear all button at the top right and ask a question button at the bottom
+        List l = new List();
+        for (int i = 1; i <=5; i++) {
+            Question q = new Question();
+            l.add(q);
+        }
+        Component[] listItems = l.getComponents();
+        assertEquals(5, listItems.length);
+    }
 
 
 }
