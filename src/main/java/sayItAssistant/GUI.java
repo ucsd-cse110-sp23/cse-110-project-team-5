@@ -261,7 +261,7 @@ class AppFrame extends JFrame {
   AppFrame() {
 
 
-    this.setSize(1000, 1000); // 400 width and 600 height
+    this.setSize(1000, 1000); // 1000 width and 1000 height
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close on exit
     this.setVisible(true); // Make visible
 
