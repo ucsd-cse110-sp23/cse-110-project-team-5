@@ -1,4 +1,4 @@
-package src.tests.java.sayItAssistant;
+package sayItAssistant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -65,6 +65,18 @@ public class Tests {
         assertEquals(4, listItems2.length);
         // Check revalidate
         assertEquals("1", ((Question) listItems2[0]).index.getText());
+    }
+
+    @Test 
+    void testUserStory3() {
+        // When the user 
+        // Given that the user has opened the app
+        // When the user has no prompt history
+        // Then the user will see an empty question prompt history section
+        // Along with the clear all button at the top right and ask a question button at the bottom
+        List l = new List();
+        Component[] listItems = l.getComponents();
+        assertEquals(0, listItems.length);
     }
 
 
