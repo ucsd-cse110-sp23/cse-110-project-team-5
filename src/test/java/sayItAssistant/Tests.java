@@ -74,8 +74,10 @@ public class Tests {
         // When the user has no prompt history
         // Then the user will see an empty question prompt history section
         // Along with the clear all button at the top right and ask a question button at the bottom
-        AppFrame a = new AppFrame();
-        Component[] listItems = a.list.getComponents();
+        List l = new List();
+        Component[] listItems = l.getComponents();
         assertEquals(0, listItems.length);
     }
+
+
 }
