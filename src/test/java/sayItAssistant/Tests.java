@@ -114,6 +114,27 @@ public class Tests {
         Question q = l.createQuestion(mockQuestion);
         assertEquals(q.questionName.getText(),mockQuestion);
     }
+    
+    //Given the transcripted question is sent as a prompt to ChatGPT
+    //When the answer is sent back from ChatGPT
+    //Then make the answer appear in the Answer Box
+    @Test
+    void testUserStory72(){
+        MockChatGPT chatgpt = new MockChatGPT();
+        String mockTrans = "";
+        String mockAnswer = "Sorry, I don't know the answer to that question.";
+        try {
+            answer = chatgpt.getAnswer(mockTrans);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+         List l = new List();
+        Question q = l.createQuestion(answer);
+        assertEquals(q.questionName.getText(),mockAnswer);
+    }
+        
+
 
 
 
