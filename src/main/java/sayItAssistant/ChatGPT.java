@@ -1,4 +1,4 @@
-package sayItAssistant;
+package src.main.java.sayItAssistant;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -41,8 +41,7 @@ public class ChatGPT {
         .newBuilder()
         .uri(URI.create(API_ENDPOINT))
         .header("Content-Type", "application/json")
-        .header("Authorization", String.format("Bearer %s", "mock_api_key")) //mock request key
-        // .header("Authorization", String.format("Bearer %s", API_KEY))
+        .header("Authorization", String.format("Bearer %s", API_KEY))
         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
         .build();
 
@@ -52,11 +51,8 @@ public class ChatGPT {
             HttpResponse.BodyHandlers.ofString()
         );
 
-        // // Process the response
-        // String responseBody = response.body();
-
-        // Process the mock response
-        String responseBody = "{\"id\":\"cmpl-7E47oEiuLZNgAj5ICQs988ZWVubz8\",\"object\":\"text_completion\",\"created\":1683586804,\"model\":\"text-davinci-003\",\"choices\":[{\"text\":\"Yes and this is a mock answer.\",\"index\":0,\"logprobs\":null,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":35,\"completion_tokens\":15,\"total_tokens\":50}}";
+        // Process the response
+        String responseBody = response.body();
 
         JSONObject responseJson = new JSONObject(responseBody);
 

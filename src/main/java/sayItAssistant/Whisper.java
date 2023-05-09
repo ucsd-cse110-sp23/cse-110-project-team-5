@@ -1,4 +1,4 @@
-package sayItAssistant;
+package src.main.java.sayItAssistant;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,19 +17,19 @@ public class Whisper {
 
 
     // Helper method to write a parameter to the output stream in multipart form data format
-private static void writeParameterToOutputStream(
+    private static void writeParameterToOutputStream(
     OutputStream outputStream,
     String parameterName,
     String parameterValue,
     String boundary
     ) throws IOException {
-    outputStream.write(("--" + boundary + "\r\n").getBytes());
-    outputStream.write(
-        (
-        "Content-Disposition: form-data; name=\"" + parameterName + "\"\r\n\r\n"
-        ).getBytes()
-    );
-    outputStream.write((parameterValue + "\r\n").getBytes());
+        outputStream.write(("--" + boundary + "\r\n").getBytes());
+        outputStream.write(
+            (
+            "Content-Disposition: form-data; name=\"" + parameterName + "\"\r\n\r\n"
+            ).getBytes()
+        );
+        outputStream.write((parameterValue + "\r\n").getBytes());
     }
 
     // Helper method to write a file to the output stream in multipart form data format 
@@ -37,24 +37,24 @@ private static void writeParameterToOutputStream(
     OutputStream outputStream,
     File file,
     String boundary
-) throws IOException {
-    outputStream.write(("--" + boundary + "\r\n"). getBytes()); 
-    outputStream.write(
-        (
-            "Content-Disposition: form-data; name=\"file\"; filename=\"" +
-            file.getName() + 
-            "\"\r\n"
-        ).getBytes()
-    );
-    outputStream.write(("Content-Type: audio/mpeg\r\n\r\n").getBytes());
+    ) throws IOException {
+        outputStream.write(("--" + boundary + "\r\n"). getBytes()); 
+        outputStream.write(
+            (
+                "Content-Disposition: form-data; name=\"file\"; filename=\"" +
+                file.getName() + 
+                "\"\r\n"
+            ).getBytes()
+        );
+        outputStream.write(("Content-Type: audio/mpeg\r\n\r\n").getBytes());
 
-    FileInputStream fileInputStream = new FileInputStream(file);
-    byte[] buffer = new byte [1024];
-    int bytesRead;
-    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-        outputStream.write(buffer, 0, bytesRead);
-    }
-    fileInputStream.close();
+        FileInputStream fileInputStream = new FileInputStream(file);
+        byte[] buffer = new byte [1024];
+        int bytesRead;
+        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+        fileInputStream.close();
 
     }
 
@@ -105,8 +105,7 @@ private static void writeParameterToOutputStream(
         "Content-Type",
         "multipart/form-data; boundary=" + boundary
         );
-        //connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
-        connection.setRequestProperty("Authorization", "Bearer " + "mock_api_key"); //mock api key
+        connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
         
         OutputStream outputStream = connection.getOutputStream();
         
@@ -121,7 +120,7 @@ private static void writeParameterToOutputStream(
 
         int responseCode = connection.getResponseCode();
 
-        String questionTranscription = "Is this a mock question?";
+        String questionTranscription = "Did not reach the question.";
 
         if (responseCode ==  HttpURLConnection.HTTP_OK) {
             questionTranscription = handleSuccessResponse(connection);

@@ -1,4 +1,4 @@
-package sayItAssistant;
+package src.main.java.sayItAssistant;
 /**
  * This code was refactored from the original code found at:
  * https://copyassignment.com/to-do-list-app-in-java/
@@ -187,6 +187,7 @@ class Footer extends JPanel {
     this.setBackground(backgroundColor);
 
     recordButton = new JButton("<html><p style='text-align:center;'>Ask Question</p></html>");
+    recordButton.setOpaque(true);
     recordButton.setHorizontalAlignment(SwingConstants.CENTER);
     recordButton.setFont(new Font("Sans-serif", Font.BOLD, 18));
     recordButton.setBackground(red);
@@ -259,7 +260,7 @@ class AppFrame extends JFrame {
   AppFrame() {
 
 
-    this.setSize(400, 600); // 400 width and 600 height
+    this.setSize(1000, 1000); // 400 width and 600 height
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close on exit
     this.setVisible(true); // Make visible
 
