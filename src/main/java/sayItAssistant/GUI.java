@@ -1,4 +1,4 @@
-package src.main.java.sayItAssistant;
+package sayItAssistant;
 /**
  * This code was refactored from the original code found at:
  * https://copyassignment.com/to-do-list-app-in-java/
@@ -253,7 +253,7 @@ class AppFrame extends JFrame {
 
   private Header header;
   private Footer footer;
-  private List list;
+  public List list;
 
   private JButton clearAllButton;
   private JButton recordButton;

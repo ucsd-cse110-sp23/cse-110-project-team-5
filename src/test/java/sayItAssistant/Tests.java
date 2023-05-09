@@ -1,4 +1,4 @@
-package src.tests.java.sayItAssistant;
+package sayItAssistant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -67,5 +67,15 @@ public class Tests {
         assertEquals("1", ((Question) listItems2[0]).index.getText());
     }
 
-
+    @Test 
+    void testUserStory3() {
+        // When the user 
+        // Given that the user has opened the app
+        // When the user has no prompt history
+        // Then the user will see an empty question prompt history section
+        // Along with the clear all button at the top right and ask a question button at the bottom
+        AppFrame a = new AppFrame();
+        Component[] listItems = a.list.getComponents();
+        assertEquals(0, listItems.length);
+    }
 }
