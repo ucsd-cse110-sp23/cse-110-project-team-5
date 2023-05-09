@@ -23,6 +23,19 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java/sayItAssistant"]
+        }
+    }
+    test {
+        java {
+            srcDirs = ["src/test/java/sayItAssistant"]
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
