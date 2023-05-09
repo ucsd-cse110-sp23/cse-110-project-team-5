@@ -122,16 +122,16 @@ public class Tests {
     void testUserStory72(){
         MockChatGPT chatgpt = new MockChatGPT();
         String mockTrans = "";
-        String mockAnswer = "Sorry, I don't know the answer to that question.";
+        String mockAnswer = "";
         try {
-            answer = chatgpt.getAnswer(mockTrans);
+            mockAnswer = chatgpt.getAnswer(mockTrans);
         }
         catch (IOException e) {
             System.out.println(e);
         }
          List l = new List();
-        Question q = l.createQuestion(answer);
-        assertEquals(q.questionName.getText(),mockAnswer);
+        Question q = l.createQuestion(mockAnswer);
+        assertEquals(q.questionName.getText(),"Sorry, I don't know the answer to that question.");
     }
         
 
