@@ -35,7 +35,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class Question extends JPanel {
+class Question extends JPanel {
 
   JLabel index;
   JTextField questionName;
