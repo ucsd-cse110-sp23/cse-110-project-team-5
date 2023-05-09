@@ -1,4 +1,4 @@
-package sayItAssistant;
+
 /**
  * This code was refactored from the original code found at:
  * https://copyassignment.com/to-do-list-app-in-java/
@@ -73,6 +73,11 @@ class Question extends JPanel {
     trashCanButton.setBackground(backgroundColor);
     this.add(trashCanButton, BorderLayout.EAST);
   }
+
+  // Question(String text) {
+  //   Question();
+  //   this.questionName.setText(text);
+  // }
 
   public void changeIndex(int num) {
     this.index.setText(num + ""); // num to String
@@ -169,6 +174,14 @@ class List extends JPanel {
 
     }
     
+  }
+
+  public Question createQuestion(String transcription) {
+    Question q = new Question();
+    q.questionName.setText(transcription);
+    add(q);
+    updateNumbers();
+    return q;
   }
 }
 
@@ -294,9 +307,12 @@ class AppFrame extends JFrame {
         public void mouseReleased(MouseEvent e) {
           recorder.stopRecording();
 
-          Question question = new Question();
-          list.add(question);
-          list.updateNumbers();
+          // Question question = new Question();
+          // list.add(question);
+          // list.updateNumbers();
+          try {
+          String questionTranscription = Whisper.getQuestion();
+          Question question = list.createQuestion(questionTranscription);
           revalidate();
           JButton trashCanButton = question.getTrashCan();
           trashCanButton.addMouseListener(
@@ -308,10 +324,6 @@ class AppFrame extends JFrame {
               }
             }
           );
-          try {
-            String questionTranscription = Whisper.getQuestion();
-            question.questionName.setText(questionTranscription);
-
             Question answer = new Question();
             list.add(answer);
             list.updateNumbers();

@@ -1,4 +1,4 @@
-package sayItAssistant;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.awt.Component;
+import java.io.IOException;
 
 public class Tests {
 
@@ -94,6 +95,26 @@ public class Tests {
         Component[] listItems = l.getComponents();
         assertEquals(5, listItems.length);
     }
+
+    /** Given I finish asking the question
+     * When the question is transcribed
+     * Then make the transcribed question appear in the question prompt
+     */
+    @Test
+    void testUserStory7() {
+        MockWhisper whisper = new MockWhisper();
+        String mockQuestion = "";
+        try {
+            mockQuestion = whisper.getQuestion();
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+        List l = new List();
+        Question q = l.createQuestion(mockQuestion);
+        assertEquals(q.questionName.getText(),mockQuestion);
+    }
+
 
 
 }
