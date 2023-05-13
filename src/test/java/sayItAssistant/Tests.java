@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.awt.Component;
 import java.io.IOException;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 public class Tests {
 
     @Test
@@ -113,6 +117,31 @@ public class Tests {
         List l = new List();
         Question q = l.createQuestion(mockQuestion);
         assertEquals(q.questionName.getText(),mockQuestion);
+    }
+
+    @Test
+    void testSaveQuestions() {
+        List l = new List();
+        for (int i = 1; i <=5; i++) {
+            Question q = new Question();
+            q.changeIndex(i);
+            q.questionName.setText(Integer.toString(i));
+            l.add(q);
+        }
+
+        l.saveQuestions();
+        // Check if all questions have been saved
+        File file = new File("Questions.txt");
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            for (int i = 1; i <= 5; i++) {
+                line = br.readLine();
+                assertEquals(Integer.toString(i), line);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
    
         

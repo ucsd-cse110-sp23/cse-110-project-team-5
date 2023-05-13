@@ -127,6 +127,7 @@ class List extends JPanel {
     remove(x);
     updateNumbers();
     revalidate();
+    this.saveQuestions();
   }
 
   /**
@@ -328,6 +329,7 @@ class AppFrame extends JFrame {
             list.add(answer);
             list.updateNumbers();
             revalidate();
+
             JButton trashCanButton2 = answer.getTrashCan();
             trashCanButton2.addMouseListener(
               new MouseAdapter() {
@@ -341,6 +343,7 @@ class AppFrame extends JFrame {
 
             String answerText = ChatGPT.getAnswer(questionTranscription);
             answer.questionName.setText(answerText);
+            list.saveQuestions();
           } catch (Exception w) {
 
           }
@@ -355,6 +358,7 @@ class AppFrame extends JFrame {
         public void mousePressed(MouseEvent e) {
           list.clearAllQuestions();
           repaint();
+          list.saveQuestions();
         }
       }
     );
@@ -364,7 +368,8 @@ class AppFrame extends JFrame {
 public class GUI {
 
   public static void main(String args[]) {
-    new AppFrame(); // Create the frame
+    AppFrame app = new AppFrame(); // Create the frame
+    app.list.loadQuestions();
   }
 }
 
