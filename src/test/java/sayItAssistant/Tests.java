@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.util.ArrayList;
 
 public class Tests {
 
@@ -143,10 +145,20 @@ public class Tests {
             e.printStackTrace();
         }
     }
-   
-        
 
+    @Test
+    void testLoadQuestions() {
+        try (FileWriter fw = new FileWriter("Questions.txt")) {
+            fw.write("Question Test\n");
+            fw.write("Answer Test");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
-
-
+        List l = new List();
+        ArrayList<Question> result =  l.loadQuestions();
+        assertEquals("Question Test", result.get(0).questionName.getText());
+        assertEquals("Answer Test", result.get(1).questionName.getText());
+    }
 }

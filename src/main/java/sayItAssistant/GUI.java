@@ -1,7 +1,13 @@
 
 /**
  * This code was refactored from the original code found at:
- * https://copyassignment.com/to-do-list-app-in-java/
+ * https://copyassignment.com/to-do-list-app-in-java/ given to us by Lab4
+ * 
+ * This file contains 4 classes essential to the GUI of the app, 
+ * List - Contains a list of all questions
+ * Header - Contains App title and clear all button
+ * Footer - Contains Ask a question button
+ * App frame - Brings together 3 aforementioned classes
  */
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,60 +41,13 @@ import javax.swing.*;
 import java.awt.*;
 
 
-class Question extends JPanel {
-
-  JLabel index;
-  JTextField questionName;
-  JButton trashCanButton;
-
-  Color backgroundColor = new Color(100, 100, 100);  // Dark gray
-  Color green = new Color(188, 226, 158);
-
-  Question() {
-    this.setPreferredSize(new Dimension(400, 20)); // set size of question
-    this.setBackground(backgroundColor); // set background color of question
-    this.setLayout(new BorderLayout()); // set layout of question
-
-
-    index = new JLabel(""); // create index label
-    index.setPreferredSize(new Dimension(20, 20)); // set size of index label
-    index.setHorizontalAlignment(JLabel.CENTER); // set alignment of index label
-    this.add(index, BorderLayout.WEST); // add index label to question
-
-    questionName = new JTextField(""); // create question name text field
-    questionName.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
-    questionName.setBackground(backgroundColor); // set background color of text field
-
-    this.add(questionName, BorderLayout.CENTER);
-
-
-    trashCanButton = new JButton();
-    try {
-      Image img = ImageIO.read(getClass().getResource("../../../static/trashCanIcon.jpeg")).getScaledInstance(35, 35, Image.SCALE_DEFAULT);;
-      trashCanButton.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
-
-    trashCanButton.setBackground(backgroundColor);
-    this.add(trashCanButton, BorderLayout.EAST);
-  }
-
-  // Question(String text) {
-  //   Question();
-  //   this.questionName.setText(text);
-  // }
-
-  public void changeIndex(int num) {
-    this.index.setText(num + ""); // num to String
-    this.revalidate(); // refresh
-  }
-
-  public JButton getTrashCan() {
-    return trashCanButton;
-  }
-}
-
+/*
+ * This class extends JPanel and serves as the list container
+ * for all questions and answers that the app has been asked
+ * 
+ * contains: updateNumbers, clearAllQuestions, removeSingle, 
+ * saveQuestions, and loadQuestions
+ */
 class List extends JPanel {
 
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
@@ -96,12 +55,14 @@ class List extends JPanel {
   List() {
     GridLayout layout = new GridLayout(10, 1);
     layout.setVgap(5); // Vertical gap
-
     this.setLayout(layout); // 10 questions
     this.setPreferredSize(new Dimension(400, 560));
     this.setBackground(backgroundColor);
   }
 
+  /**
+   * Update the question numbers on the list
+   */
   public void updateNumbers() {
     Component[] listItems = this.getComponents();
 
@@ -113,16 +74,23 @@ class List extends JPanel {
   }
 
 
+  /**
+   * Clears all questions from app and database
+   */
   public void clearAllQuestions() {
     for (Component c : getComponents()) {
       if (c instanceof Question) {
-        remove(c); // remove the component
+        remove(c); // remove the question
         updateNumbers(); // update the indexing of all items
         revalidate();
       }
     }
+    this.saveQuestions();
   }
 
+  /**
+   * Removes one question from the App frame
+   */
   public void removeSingle(Component x){
     remove(x);
     updateNumbers();
@@ -137,13 +105,24 @@ class List extends JPanel {
   public ArrayList<Question> loadQuestions() {
     File file = new File("Questions.txt");
     try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        ArrayList<Question> result = new ArrayList<>();
         String line;
-        ArrayList<Question> result = new ArrayList<Question>();  
         while ((line = br.readLine()) != null) {
           Question question = new Question();
           question.questionName.setText(line);
-          result.add(question);
           this.add(question);
+          result.add(question);
+          revalidate();
+          JButton trashCanButton = question.getTrashCan();
+          trashCanButton.addMouseListener(
+            new MouseAdapter() {
+              @override
+              public void mousePressed(MouseEvent e) {
+                removeSingle(question);
+                repaint(); // Updates the frame
+              }
+            }
+          );
         }
         br.close();
         this.updateNumbers(); // Updates the numbers of the questions
@@ -151,14 +130,13 @@ class List extends JPanel {
         return result;
     } catch (IOException e) {
         e.printStackTrace();
+        return null;
     }
-
-    return null;
   }
 
 
   /**
-   * Saves questions to a file called "questions.txt"
+   * Saves questions to a file called "Questions.txt"
    */
   public void saveQuestions() {
     
@@ -172,11 +150,14 @@ class List extends JPanel {
       }
       fw.close();
     } catch(IOException e) {
-
+      e.printStackTrace();
     }
     
   }
 
+  /*
+   * Creates question with the label of given string transcription
+   */
   public Question createQuestion(String transcription) {
     Question q = new Question();
     q.questionName.setText(transcription);
@@ -186,6 +167,10 @@ class List extends JPanel {
   }
 }
 
+
+/*
+ * Footer that contains ask a question button
+ */
 class Footer extends JPanel {
 
   JButton recordButton;
@@ -213,11 +198,17 @@ class Footer extends JPanel {
     this.add(recordButton);
   }
 
+  /**
+   * Getter method for record button 
+   */
   public JButton getRecordButton() {
     return recordButton;
   }
 }
 
+/**
+ * Header that contains the title of app and clear all button
+ */
 class Header extends JPanel {
 
   JButton clearAllButton;
@@ -256,11 +247,17 @@ class Header extends JPanel {
     this.setBackground(backgroundColor);
   }
 
+  /**
+   * Getter method for clearAllButton
+   */
   public JButton getClearAllButton() {
     return clearAllButton;
   }
 }
 
+/**
+ * App frame class that combines all buttons, header, footer, and list
+ */
 class AppFrame extends JFrame {
   Color red = new Color(255, 0, 0);
   Color darkRed = new Color (200, 0, 0);
@@ -294,6 +291,10 @@ class AppFrame extends JFrame {
     revalidate();
   }
 
+  /**
+   * This method adds mouse listeners to the record button 
+   * and the delete and clear all button
+   */
   public void addListeners() {
     Record recorder = new Record();
     
@@ -358,7 +359,6 @@ class AppFrame extends JFrame {
         public void mousePressed(MouseEvent e) {
           list.clearAllQuestions();
           repaint();
-          list.saveQuestions();
         }
       }
     );
