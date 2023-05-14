@@ -41,6 +41,55 @@ import javax.swing.*;
 import java.awt.*;
 
 
+class Question extends JPanel {
+
+  JLabel index;
+  JTextField questionName;
+  JButton trashCanButton;
+
+  Color backgroundColor = new Color(100, 100, 100);  // Dark gray
+  Color green = new Color(188, 226, 158);
+
+  Question() {
+    this.setPreferredSize(new Dimension(400, 20)); // set size of question
+    this.setBackground(backgroundColor); // set background color of question
+    this.setLayout(new BorderLayout()); // set layout of question
+
+    index = new JLabel(""); // create index label
+    index.setPreferredSize(new Dimension(20, 20)); // set size of index label
+    index.setHorizontalAlignment(JLabel.CENTER); // set alignment of index label
+    this.add(index, BorderLayout.WEST); // add index label to question
+
+    questionName = new JTextField(""); // create question name text field
+    questionName.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
+    questionName.setBackground(backgroundColor); // set background color of text field
+
+    this.add(questionName, BorderLayout.CENTER);
+
+
+    trashCanButton = new JButton();
+    try {
+      Image img = ImageIO.read(getClass().getResource("../../../static/trashCanIcon.jpeg")).getScaledInstance(35, 35, Image.SCALE_DEFAULT);;
+      trashCanButton.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
+    }
+
+    trashCanButton.setBackground(backgroundColor);
+    this.add(trashCanButton, BorderLayout.EAST);
+  }
+
+  public void changeIndex(int num) {
+    this.index.setText(num + ""); // num to String
+    this.revalidate(); // refresh
+  }
+
+  public JButton getTrashCan() {
+    return trashCanButton;
+  }
+}
+
+
 /*
  * This class extends JPanel and serves as the list container
  * for all questions and answers that the app has been asked
