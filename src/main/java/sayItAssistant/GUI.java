@@ -93,7 +93,7 @@ class Question extends JPanel {
  */
 class List extends JPanel {
 
-  public int numQuestions;
+  public int numQuestions = 5;
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
   List() {
@@ -101,7 +101,6 @@ class List extends JPanel {
     layout.setVgap(5); // Vertical gap
     this.setLayout(layout); // 10 questions
     this.setBackground(backgroundColor);
-    this.loadQuestions();
     this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
   }
 
@@ -425,6 +424,7 @@ public class GUI {
 
   public static void main(String args[]) {
     AppFrame app = new AppFrame(); // Create the frame
+    app.list.loadQuestions();
   }
 }
 
