@@ -9,12 +9,6 @@
  * Footer - Contains Ask a question button
  * App frame - Brings together 3 aforementioned classes
  */
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -99,14 +93,16 @@ class Question extends JPanel {
  */
 class List extends JPanel {
 
+  public int numQuestions;
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
   List() {
-    GridLayout layout = new GridLayout(10, 1);
+    GridLayout layout = new GridLayout(0, 1);
     layout.setVgap(5); // Vertical gap
     this.setLayout(layout); // 10 questions
-    this.setPreferredSize(new Dimension(400, 560));
     this.setBackground(backgroundColor);
+    this.loadQuestions();
+    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
   }
 
   /**
@@ -134,6 +130,8 @@ class List extends JPanel {
         revalidate();
       }
     }
+    this.setPreferredSize(new Dimension(400, 1000));
+    this.numQuestions = 0;
     this.saveQuestions();
   }
 
@@ -143,6 +141,9 @@ class List extends JPanel {
   public void removeSingle(Component x){
     remove(x);
     updateNumbers();
+    this.numQuestions -= 1;
+    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
+    repaint();
     revalidate();
     this.saveQuestions();
   }
@@ -168,13 +169,13 @@ class List extends JPanel {
               @override
               public void mousePressed(MouseEvent e) {
                 removeSingle(question);
-                repaint(); // Updates the frame
               }
             }
           );
         }
         br.close();
         this.updateNumbers(); // Updates the numbers of the questions
+        this.numQuestions = result.size();
         revalidate();
         return result;
     } catch (IOException e) {
@@ -314,6 +315,7 @@ class AppFrame extends JFrame {
   private Header header;
   private Footer footer;
   public List list;
+  public JScrollPane scrollPane;
 
   private JButton clearAllButton;
   private JButton recordButton;
@@ -331,7 +333,12 @@ class AppFrame extends JFrame {
 
     this.add(header, BorderLayout.NORTH); // Add title bar on top of the screen
     this.add(footer, BorderLayout.SOUTH); // Add footer on bottom of the screen
-    this.add(list, BorderLayout.CENTER); // Add list in middle of footer and title
+    // this.add(list, BorderLayout.CENTER); // Add list in middle of footer and title
+    scrollPane = new JScrollPane(list);
+
+    list.setPreferredSize(new Dimension(400, 105 * list.numQuestions));
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    this.add(scrollPane);
 
     recordButton = footer.getRecordButton();
     clearAllButton = header.getClearAllButton();
@@ -358,11 +365,9 @@ class AppFrame extends JFrame {
         public void mouseReleased(MouseEvent e) {
           recorder.stopRecording();
 
-          // Question question = new Question();
-          // list.add(question);
-          // list.updateNumbers();
+          
           try {
-          String questionTranscription = Whisper.getQuestion();
+          String questionTranscription = MockWhisper.getQuestion();
           Question question = list.createQuestion(questionTranscription);
           revalidate();
           JButton trashCanButton = question.getTrashCan();
@@ -371,13 +376,15 @@ class AppFrame extends JFrame {
               @override
               public void mousePressed(MouseEvent e) {
                 list.removeSingle(question);
-                repaint(); // Updates the frame
               }
             }
           );
             Question answer = new Question();
             list.add(answer);
             list.updateNumbers();
+            list.numQuestions += 2;
+            list.setPreferredSize(new Dimension(400, 105 * list.numQuestions));
+            repaint();
             revalidate();
 
             JButton trashCanButton2 = answer.getTrashCan();
@@ -386,12 +393,11 @@ class AppFrame extends JFrame {
                 @override
                 public void mousePressed(MouseEvent e) {
                   list.removeSingle(answer);
-                  repaint(); // Updates the frame
                 }
               }
             );
 
-            String answerText = ChatGPT.getAnswer(questionTranscription);
+            String answerText = MockChatGPT.getAnswer(questionTranscription);
             answer.questionName.setText(answerText);
             list.saveQuestions();
           } catch (Exception w) {
@@ -408,6 +414,7 @@ class AppFrame extends JFrame {
         public void mousePressed(MouseEvent e) {
           list.clearAllQuestions();
           repaint();
+          revalidate();
         }
       }
     );
@@ -418,7 +425,6 @@ public class GUI {
 
   public static void main(String args[]) {
     AppFrame app = new AppFrame(); // Create the frame
-    app.list.loadQuestions();
   }
 }
 
