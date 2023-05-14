@@ -9,21 +9,12 @@
  * Footer - Contains Ask a question button
  * App frame - Brings together 3 aforementioned classes
  */
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.chrono.ThaiBuddhistEra;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -35,17 +26,22 @@ import javax.swing.border.Border;
 import java.io.File;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
-
+/**
+ * Question class that represents a question asked by a user. 
+ * It stores the answer related to it as well as the delete and expand button
+ */
 class Question extends JPanel {
 
   JLabel index;
   JTextField questionName;
   JButton trashCanButton;
+  JButton expandButton;
+  boolean expanded = false;
+  String answer;
 
   Color backgroundColor = new Color(100, 100, 100);  // Dark gray
   Color green = new Color(188, 226, 158);
@@ -69,16 +65,36 @@ class Question extends JPanel {
 
     trashCanButton = new JButton();
     try {
-      Image img = ImageIO.read(getClass().getResource("../../../static/trashCanIcon.jpeg")).getScaledInstance(35, 35, Image.SCALE_DEFAULT);;
-      trashCanButton.setIcon(new ImageIcon(img));
+      trashCanButton.setText("Delete");
     } catch (Exception ex) {
       System.out.println(ex);
     }
 
     trashCanButton.setBackground(backgroundColor);
     this.add(trashCanButton, BorderLayout.EAST);
+
+    expandButton = new JButton();
+    try {
+      expandButton.setText("Expand");;
+    } catch (Exception ex) {
+      System.out.println(ex);
+    }
+
+    expandButton.setBackground(backgroundColor);
+    this.add(expandButton, BorderLayout.WEST);
   }
 
+  // update the answer to this question
+  public void setAnswer(String text) {
+    this.answer = text;
+  }
+
+  // return the answer to this question
+  public String getAnswer() {
+    return this.answer;
+  }
+
+  
   public void changeIndex(int num) {
     this.index.setText(num + ""); // num to String
     this.revalidate(); // refresh
@@ -86,6 +102,10 @@ class Question extends JPanel {
 
   public JButton getTrashCan() {
     return trashCanButton;
+  }
+
+  public JButton getExpand() {
+    return expandButton;
   }
 }
 
@@ -99,14 +119,15 @@ class Question extends JPanel {
  */
 class List extends JPanel {
 
+  public int numQuestions = 5;
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
   List() {
-    GridLayout layout = new GridLayout(10, 1);
+    GridLayout layout = new GridLayout(0, 1);
     layout.setVgap(5); // Vertical gap
     this.setLayout(layout); // 10 questions
-    this.setPreferredSize(new Dimension(400, 560));
     this.setBackground(backgroundColor);
+    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
   }
 
   /**
@@ -134,6 +155,8 @@ class List extends JPanel {
         revalidate();
       }
     }
+    this.setPreferredSize(new Dimension(400, 1000));
+    this.numQuestions = 0;
     this.saveQuestions();
   }
 
@@ -143,6 +166,9 @@ class List extends JPanel {
   public void removeSingle(Component x){
     remove(x);
     updateNumbers();
+    this.numQuestions -= 1;
+    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
+    repaint();
     revalidate();
     this.saveQuestions();
   }
@@ -157,24 +183,16 @@ class List extends JPanel {
         ArrayList<Question> result = new ArrayList<>();
         String line;
         while ((line = br.readLine()) != null) {
-          Question question = new Question();
-          question.questionName.setText(line);
-          this.add(question);
-          result.add(question);
-          revalidate();
-          JButton trashCanButton = question.getTrashCan();
-          trashCanButton.addMouseListener(
-            new MouseAdapter() {
-              @override
-              public void mousePressed(MouseEvent e) {
-                removeSingle(question);
-                repaint(); // Updates the frame
-              }
-            }
-          );
+          Question q = this.createQuestion(line);
+          line = br.readLine();
+          q.setAnswer(line);
+          result.add(q);
         }
         br.close();
         this.updateNumbers(); // Updates the numbers of the questions
+        this.numQuestions = result.size();
+        this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
+        repaint();
         revalidate();
         return result;
     } catch (IOException e) {
@@ -195,6 +213,7 @@ class List extends JPanel {
       for (int i = 0; i < listItems.length; i++) {
         if (listItems[i] instanceof Question) {
           fw.write(((Question) listItems[i]).questionName.getText() + '\n');
+          fw.write(((Question) listItems[i]).getAnswer() + '\n');
         }
       }
       fw.close();
@@ -208,11 +227,33 @@ class List extends JPanel {
    * Creates question with the label of given string transcription
    */
   public Question createQuestion(String transcription) {
-    Question q = new Question();
-    q.questionName.setText(transcription);
-    add(q);
+    Question question = new Question();
+    question.questionName.setText(transcription);
+    JButton trashCanButton = question.getTrashCan();
+            trashCanButton.addMouseListener(
+              new MouseAdapter() {
+                @override
+                public void mousePressed(MouseEvent e) {
+                  removeSingle(question);
+                }
+              }
+            );
+    JButton expandButton = question.getExpand();
+    expandButton.addMouseListener(
+      new MouseAdapter() {
+        @override
+        public void mousePressed(MouseEvent e) {
+          AppFrame.label.setText(question.getAnswer());
+        }
+      }
+    );
+    add(question);
+    this.numQuestions += 1;
+    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
+    repaint();
+    revalidate();
     updateNumbers();
-    return q;
+    return question;
   }
 }
 
@@ -310,10 +351,17 @@ class Header extends JPanel {
 class AppFrame extends JFrame {
   Color red = new Color(255, 0, 0);
   Color darkRed = new Color (200, 0, 0);
+  Color darkGrey = new Color (50,50,50);
+  Color foregroundColor = new Color(200, 200, 200);
 
   private Header header;
   private Footer footer;
   public List list;
+  public JScrollPane scrollPane; // making list of questions scrollable
+  public JSplitPane splitPane; // split window for question history and answer display
+  public JPanel answerPane; // custom JPanel to display answer in our split pane
+  public JScrollPane answerScroll; // contains answer Pane to make it scrollable
+  static JTextField label; // added to answerPane to display text and change when needed
 
   private JButton clearAllButton;
   private JButton recordButton;
@@ -321,7 +369,7 @@ class AppFrame extends JFrame {
   AppFrame() {
 
 
-    this.setSize(1000, 1000); // 1000 width and 1000 height
+    this.setSize(1200, 1000); // 1000 width and 1000 height
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close on exit
     this.setVisible(true); // Make visible
 
@@ -329,9 +377,28 @@ class AppFrame extends JFrame {
     footer = new Footer();
     list = new List();
 
+    answerPane = new JPanel();
+    answerPane.setBackground(darkGrey);
+    label = new JTextField();
+    label.setFont(new Font("Arial", Font.BOLD, 15));
+    label.setForeground(foregroundColor);
+    label.setBackground(darkGrey);
+    answerPane.add(label);
+
+    answerScroll = new JScrollPane(answerPane);
+
     this.add(header, BorderLayout.NORTH); // Add title bar on top of the screen
     this.add(footer, BorderLayout.SOUTH); // Add footer on bottom of the screen
-    this.add(list, BorderLayout.CENTER); // Add list in middle of footer and title
+    // this.add(list, BorderLayout.CENTER); // Add list in middle of footer and title
+    scrollPane = new JScrollPane(list);
+
+    list.setPreferredSize(new Dimension(400, 105 * list.numQuestions));
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    // this.add(scrollPane);
+
+    splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, answerScroll);
+    splitPane.setBackground(darkGrey);
+    this.add(splitPane);
 
     recordButton = footer.getRecordButton();
     clearAllButton = header.getClearAllButton();
@@ -347,57 +414,30 @@ class AppFrame extends JFrame {
   public void addListeners() {
     Record recorder = new Record();
     
+    
     recordButton.addMouseListener (
       new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
-            recorder.startRecording();
+          recorder.startRecording();
         }
         
         @Override
         public void mouseReleased(MouseEvent e) {
           recorder.stopRecording();
 
-          // Question question = new Question();
-          // list.add(question);
-          // list.updateNumbers();
           try {
-          String questionTranscription = Whisper.getQuestion();
-          Question question = list.createQuestion(questionTranscription);
-          revalidate();
-          JButton trashCanButton = question.getTrashCan();
-          trashCanButton.addMouseListener(
-            new MouseAdapter() {
-              @override
-              public void mousePressed(MouseEvent e) {
-                list.removeSingle(question);
-                repaint(); // Updates the frame
-              }
-            }
-          );
-            Question answer = new Question();
-            list.add(answer);
-            list.updateNumbers();
-            revalidate();
-
-            JButton trashCanButton2 = answer.getTrashCan();
-            trashCanButton2.addMouseListener(
-              new MouseAdapter() {
-                @override
-                public void mousePressed(MouseEvent e) {
-                  list.removeSingle(answer);
-                  repaint(); // Updates the frame
-                }
-              }
-            );
-
-            String answerText = ChatGPT.getAnswer(questionTranscription);
-            answer.questionName.setText(answerText);
+            String questionTranscription = MockWhisper.getQuestion();
+            Question question = list.createQuestion(questionTranscription);
+            String answer = MockChatGPT.getAnswer(questionTranscription);
+            question.setAnswer(answer);
+            label.setText(answer);
             list.saveQuestions();
+            repaint();
+            revalidate();
           } catch (Exception w) {
-
+            w.printStackTrace();
           }
-          
         }
       }
     );
@@ -408,6 +448,7 @@ class AppFrame extends JFrame {
         public void mousePressed(MouseEvent e) {
           list.clearAllQuestions();
           repaint();
+          revalidate();
         }
       }
     );
@@ -419,8 +460,11 @@ public class GUI {
   public static void main(String args[]) {
     AppFrame app = new AppFrame(); // Create the frame
     app.list.loadQuestions();
+    app.repaint();
+    app.revalidate();
   }
 }
+
 
 @interface override {
 }

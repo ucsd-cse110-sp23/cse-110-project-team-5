@@ -10,6 +10,9 @@ import java.net.URL;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+/**
+ * Uses Whisper API to transcribe audio to text
+ */
 public class Whisper {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
     private static final String TOKEN = "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";

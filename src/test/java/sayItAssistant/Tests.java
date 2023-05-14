@@ -1,4 +1,3 @@
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -128,6 +127,7 @@ public class Tests {
             Question q = new Question();
             q.changeIndex(i);
             q.questionName.setText(Integer.toString(i));
+            q.setAnswer(Integer.toString(i));
             l.add(q);
         }
 
@@ -137,6 +137,8 @@ public class Tests {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             for (int i = 1; i <= 5; i++) {
+                line = br.readLine();
+                assertEquals(Integer.toString(i), line);
                 line = br.readLine();
                 assertEquals(Integer.toString(i), line);
             }
@@ -159,6 +161,6 @@ public class Tests {
         List l = new List();
         ArrayList<Question> result =  l.loadQuestions();
         assertEquals("Question Test", result.get(0).questionName.getText());
-        assertEquals("Answer Test", result.get(1).questionName.getText());
+        assertEquals("Answer Test", result.get(0).getAnswer());
     }
 }

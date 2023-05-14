@@ -3,7 +3,9 @@ import javax.sound.sampled.*;
 import java.lang.Exception;
 import java.io.File;
 
-
+/**
+ * This class allows the user to record audio and saves it in an audio file.
+ */
 public class Record {
     // the file that will contain the audio data
     private static String recordingFileName = "newQuestion.wav";

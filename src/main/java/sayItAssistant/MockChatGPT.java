@@ -4,17 +4,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.io.IOException;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONException;
 
+/**
+ * Mock class to get static anwers for testing
+ */
 public class MockChatGPT {
     
     private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";
@@ -62,8 +57,7 @@ public class MockChatGPT {
 
         JSONArray choices = responseJson.getJSONArray("choices");
         String answerText = choices.getJSONObject(0).getString("text");
-
-        System.out.println(answerText);
+        
         return answerText;
     }
 }
