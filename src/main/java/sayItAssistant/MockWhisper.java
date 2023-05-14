@@ -10,6 +10,9 @@ import java.net.URL;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+/**
+ * Mock class to get static results for testing
+ */
 public class MockWhisper {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
     private static final String TOKEN = "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";
@@ -130,7 +133,6 @@ public class MockWhisper {
 
         connection.disconnect();
 
-        System.out.println(questionTranscription);
         return questionTranscription;
     }
 }
