@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.io.IOException;
 
 import java.io.File;
@@ -121,46 +122,100 @@ public class Tests {
     }
 
     @Test
-    void testSaveQuestions() {
-        // List l = new List();
-        // for (int i = 1; i <=5; i++) {
-        //     Question q = new Question();
-        //     q.changeIndex(i);
-        //     q.questionName.setText(Integer.toString(i));
-        //     q.setAnswer(Integer.toString(i));
-        //     l.add(q);
-        // }
+    void testCreateQuestion() {
+        List l = new List();
+        l.createQuestion("Question 1");
 
-        // l.saveQuestions();
-        // // Check if all questions have been saved
-        // File file = new File("Questions.txt");
-        // try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-        //     String line;
-        //     for (int i = 1; i <= 5; i++) {
-        //         line = br.readLine();
-        //         assertEquals(Integer.toString(i), line);
-        //         line = br.readLine();
-        //         assertEquals(Integer.toString(i), line);
-        //     }
-        //     br.close();
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
+        Component[] listItems = l.getComponents();
+        assertEquals(1, listItems.length);
     }
 
     @Test
-    void testLoadQuestions() {
-        // try (FileWriter fw = new FileWriter("Questions.txt")) {
-        //     fw.write("Question Test\n");
-        //     fw.write("Answer Test");
-        // }
-        // catch (IOException e) {
-        //     e.printStackTrace();
-        // }
+    void testNumQuestions () {
+        List l = new List();
+        l.createQuestion("Question 1");
+        l.createQuestion("Question 2");
+        l.createQuestion("Question 3");
 
-        // List l = new List();
-        // l.loadQuestions();
-        // assertEquals("Question Test", result.get(0).questionName.getText());
-        // assertEquals("Answer Test", result.get(0).getAnswer());
+        assertEquals(3, l.numQuestions);
+    }
+
+    @Test
+    void testQuestionTranscription() {
+        List l = new List();
+
+        l.createQuestion("Question 1");
+
+        Component[] listItems = l.getComponents();
+        assertEquals("Question 1", ((Question)listItems[0]).questionName.getText());
+    }
+
+    @Test
+    void testPreferredSizeSmall() {
+        List l = new List();
+
+        l.createQuestion("Question 1");
+        assertEquals(new Dimension(400, 105), l.getPreferredSize());
+    }
+
+    @Test
+    void testPreferredSizeLarge () {
+        List l = new List();
+
+        l.createQuestion("Question 1");
+        l.createQuestion("Question 2");
+        l.createQuestion("Question 3");
+        l.createQuestion("Question 4");
+        l.createQuestion("Question 5");
+        l.createQuestion("Question 6");
+
+        assertEquals(new Dimension(400, 105 * 6), l.getPreferredSize());
+    }
+
+    @Test
+    void testUserStory1Scenario1() {
+        List l = new List();
+
+        l.createQuestion("Question 1");
+        l.createQuestion("Question 2");
+        l.createQuestion("Question 3");
+        l.createQuestion("Question 4");
+        l.createQuestion("Question 5");
+        l.createQuestion("Question 6");
+
+        assertTrue(l.getPreferredSize().getHeight() > 500);
+    }
+
+    @Test
+    void testUserStory1Scenario3() {
+        List l = new List();
+        assertTrue(l.getPreferredSize().getHeight() == 0);
+    }
+
+    @Test
+    void testUserStory4Scenario2() {
+        List l = new List();
+
+        l.createQuestion("This is some question given to create question");
+
+        Component[] listItems = l.getComponents();
+        // Check if the question name is set properly
+        assertEquals("This is some question given to create question", ((Question)listItems[0]).questionName.getText());
+    }
+
+    @Test
+    void testUserStory4Scenario4 () {
+        MockWhisper whisper = new MockWhisper();
+        String mockQuestion = "";
+        try {
+            mockQuestion = whisper.getQuestion();
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+        List l = new List();
+        Question q = l.createQuestion(mockQuestion);
+        Component[] listItems = l.getComponents();
+        assertEquals(mockQuestion, ((Question)listItems[0]).questionName.getText());
     }
 }
