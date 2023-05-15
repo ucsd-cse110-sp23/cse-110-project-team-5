@@ -15,20 +15,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
 import javax.swing.border.Border;
 import java.io.File;
-import javax.swing.SwingConstants;
+
 import javax.swing.border.EmptyBorder;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.net.*;
 
 /**
  * Question class that represents a question asked by a user. 
@@ -119,6 +117,8 @@ class Question extends JPanel {
  */
 class List extends JPanel {
 
+  public final String URL = "http://localhost:8100/";
+
   public int numQuestions = 5;
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
@@ -177,27 +177,34 @@ class List extends JPanel {
    * Loads questions from a file called "questions.txt"
    * @return an ArrayList of question
    */
-  public ArrayList<Question> loadQuestions() {
-    File file = new File("Questions.txt");
-    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-        ArrayList<Question> result = new ArrayList<>();
-        String line;
-        while ((line = br.readLine()) != null) {
-          Question q = this.createQuestion(line);
-          line = br.readLine();
-          q.setAnswer(line);
-          result.add(q);
-        }
-        br.close();
-        this.updateNumbers(); // Updates the numbers of the questions
-        this.numQuestions = result.size();
-        this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
-        repaint();
-        revalidate();
-        return result;
-    } catch (IOException e) {
-        e.printStackTrace();
-        return null;
+  public void loadQuestions(){
+    try {
+      URL url = new URL(URL);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("PUT");
+      BufferedReader inLength = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+      String length = inLength.readLine();
+      inLength.close();
+      int leng = Integer.parseInt(length);
+      for (int i = 0; i < leng; i++){
+        String query = Integer.toString(i);
+        URL url2 = new URL(URL + "?=" + query);
+        HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
+        conn2.setRequestMethod("GET");
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
+        String response = in.readLine();
+        String[] parts = response.split("~`~");
+        Question q = this.createQuestion(parts[0]);
+        q.setAnswer(parts[1]);
+        in.close();
+      }
+      this.updateNumbers(); // Updates the numbers of the questions
+      this.numQuestions = leng;
+      this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
+      repaint();
+      revalidate();
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 
@@ -206,21 +213,37 @@ class List extends JPanel {
    * Saves questions to a file called "Questions.txt"
    */
   public void saveQuestions() {
-    
-    try (FileWriter fw = new FileWriter("Questions.txt")) {
-      Component[] listItems = this.getComponents();
+    try{
+      URL url = new URL(URL);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("DELETE");
+      BufferedReader inLength = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+      inLength.close();
+    } catch (Exception ex){
+      ex.printStackTrace();
+    }
 
-      for (int i = 0; i < listItems.length; i++) {
-        if (listItems[i] instanceof Question) {
-          fw.write(((Question) listItems[i]).questionName.getText() + '\n');
-          fw.write(((Question) listItems[i]).getAnswer() + '\n');
+    Component[] listItems = this.getComponents();
+    for (int i = 0; i < listItems.length; i++) {
+      if (listItems[i] instanceof Question) {
+        try{
+          URL url2 = new URL(URL);
+          HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
+          conn2.setRequestMethod("POST");
+          conn2.setDoOutput(true);
+          OutputStreamWriter out = new OutputStreamWriter(conn2.getOutputStream());
+          out.write(((Question)listItems[i]).questionName.getText() + "~`~" + ((Question)listItems[i]).getAnswer());
+          out.flush();
+          out.close();
+          BufferedReader in = new BufferedReader(
+            new InputStreamReader(conn2.getInputStream())
+          );
+          in.close();
+        } catch (Exception eeex) {
+          eeex.printStackTrace();
         }
       }
-      fw.close();
-    } catch(IOException e) {
-      e.printStackTrace();
     }
-    
   }
 
   /*
