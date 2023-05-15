@@ -119,7 +119,7 @@ class List extends JPanel {
 
   public final String URL = "http://localhost:8100/";
 
-  public int numQuestions = 5;
+  public int numQuestions = 0;
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
   List() {
@@ -450,9 +450,9 @@ class AppFrame extends JFrame {
           recorder.stopRecording();
 
           try {
-            String questionTranscription = MockWhisper.getQuestion();
+            String questionTranscription = Whisper.getQuestion();
             Question question = list.createQuestion(questionTranscription);
-            String answer = MockChatGPT.getAnswer(questionTranscription);
+            String answer = ChatGPT.getAnswer(questionTranscription);
             question.setAnswer(answer);
             label.setText(answer);
             list.saveQuestions();
