@@ -91,6 +91,11 @@ public class MyHandler implements HttpHandler{
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
         String postData = scanner.nextLine();
+        String temp = "";
+        while (scanner.hasNextLine()){
+            temp = scanner.nextLine();
+          postData = postData + temp;
+        }
         System.out.println(postData);
 
         // Store data in the Arraylist

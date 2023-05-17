@@ -192,7 +192,11 @@ class List extends JPanel {
         HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
         conn2.setRequestMethod("GET");
         BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
+        String temp = "";
         String response = in.readLine();
+        while ((temp = in.readLine()) != null){
+          response = response + temp;
+        }
         String[] parts = response.split("~`~");
         Question q = this.createQuestion(parts[0]);
         q.setAnswer(parts[1]);
@@ -232,7 +236,8 @@ class List extends JPanel {
           conn2.setRequestMethod("POST");
           conn2.setDoOutput(true);
           OutputStreamWriter out = new OutputStreamWriter(conn2.getOutputStream());
-          out.write(((Question)listItems[i]).questionName.getText() + "~`~" + ((Question)listItems[i]).getAnswer());
+          System.out.println(((Question)listItems[i]).questionName.getText() + "~`~" + ((Question)listItems[i]).getAnswer());
+          out.write(((Question)listItems[i]).questionName.getText() + "~`~" + ((Question)listItems[i]).getAnswer().trim());
           out.flush();
           out.close();
           BufferedReader in = new BufferedReader(
