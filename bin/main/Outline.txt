@@ -1,0 +1,67 @@
+class PromptHandler {
+  AppFrame app;
+  PromptFactory pf;
+
+  PromptHandler(AppFrame app, PromptFactory pf) {
+    this.app = app;
+    this.pf = pf;
+  }
+
+  HandlePrompt(String transcriptionFromWhisper) {
+    
+    if (transcriptionFromWhisper.toLowerCase().indexOf("question") == 0) {
+      this.handleQuestion();
+    }
+    else if (transcriptionFromWhisper.toLowerCase().indexOf("delete prompt") == 0) {
+      this.deletePrompt();
+    }
+    else if (transcriptionFromWhisper.toLowerCase().indexOf("clear all") == 0) {
+      this.clearAll();
+    }
+    else if (transcriptionFromWhisper.toLowerCase().indexOf("create email") == 0) {
+      this.createEmail();
+    }
+    else if (transcriptionFromWhisper.toLowerCase().indexOf("send email") == 0) {
+      this.sendEmail();
+    }
+    else if (transcriptionFromWhisper.toLowerCase().indexOf("set up email") == 0) {
+      this.setupEmail();
+    }
+    else {
+      // we need to set an error message in the place of the answer and include what the user said
+      this.wrongCommand();
+    }
+
+  }
+
+  void handleQuestion() {
+    Question question = pf.createQuestion(....);
+    app.list.add(question);
+    app.label.setText(question.getAnswer());
+  }
+
+  void handleDelete() {
+    app.list.deleteSelected();
+  }
+
+  void handleClearAll() {
+    app.list.clearAllPrompts();
+  }
+  
+  void handleSetUpEmail() {
+    // create a new pop up window, handle all that stuff in its class 
+  }
+
+  void createEmail() {
+    Email email = pf.createEmail(...);
+    app.list.add(email)
+    app.
+  }
+
+  void wrongCommand() {
+    InvalidCommand invalidCommand = pf.createInvalidCommand(transcriptionFromWhisper);
+    app.list.add(invalidCommand);
+  }
+
+
+}

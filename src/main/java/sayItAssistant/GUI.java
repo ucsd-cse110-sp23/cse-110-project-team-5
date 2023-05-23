@@ -27,264 +27,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.net.*;
-
-/**
- * Question class that represents a question asked by a user. 
- * It stores the answer related to it as well as the delete and expand button
- */
-class Question extends JPanel {
-
-  JLabel index;
-  JTextField questionName;
-  JButton trashCanButton;
-  JButton expandButton;
-  boolean expanded = false;
-  String answer;
-
-  Color backgroundColor = new Color(100, 100, 100);  // Dark gray
-  Color green = new Color(188, 226, 158);
-
-  Question() {
-    this.setPreferredSize(new Dimension(400, 20)); // set size of question
-    this.setBackground(backgroundColor); // set background color of question
-    this.setLayout(new BorderLayout()); // set layout of question
-
-    index = new JLabel(""); // create index label
-    index.setPreferredSize(new Dimension(20, 20)); // set size of index label
-    index.setHorizontalAlignment(JLabel.CENTER); // set alignment of index label
-    this.add(index, BorderLayout.WEST); // add index label to question
-
-    questionName = new JTextField(""); // create question name text field
-    questionName.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
-    questionName.setBackground(backgroundColor); // set background color of text field
-
-    this.add(questionName, BorderLayout.CENTER);
-
-
-    trashCanButton = new JButton();
-    try {
-      trashCanButton.setText("Delete");
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
-
-    trashCanButton.setBackground(backgroundColor);
-    this.add(trashCanButton, BorderLayout.EAST);
-
-    expandButton = new JButton();
-    try {
-      expandButton.setText("Expand");;
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
-
-    expandButton.setBackground(backgroundColor);
-    this.add(expandButton, BorderLayout.WEST);
-  }
-
-  // update the answer to this question
-  public void setAnswer(String text) {
-    this.answer = text;
-  }
-
-  // return the answer to this question
-  public String getAnswer() {
-    return this.answer;
-  }
-
-  
-  public void changeIndex(int num) {
-    this.index.setText(num + ""); // num to String
-    this.revalidate(); // refresh
-  }
-
-  public JButton getTrashCan() {
-    return trashCanButton;
-  }
-
-  public JButton getExpand() {
-    return expandButton;
-  }
-}
-
-
-/*
- * This class extends JPanel and serves as the list container
- * for all questions and answers that the app has been asked
- * 
- * contains: updateNumbers, clearAllQuestions, removeSingle, 
- * saveQuestions, and loadQuestions
- */
-class List extends JPanel {
-
-  public final String URL = "http://localhost:8100/";
-
-  public int numQuestions = 0;
-  Color backgroundColor = new Color(50, 50, 50);  // Dark gray
-
-  List() {
-    GridLayout layout = new GridLayout(0, 1);
-    layout.setVgap(5); // Vertical gap
-    this.setLayout(layout); // 10 questions
-    this.setBackground(backgroundColor);
-    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
-  }
-
-  /**
-   * Update the question numbers on the list
-   */
-  public void updateNumbers() {
-    Component[] listItems = this.getComponents();
-
-    for (int i = 0; i < listItems.length; i++) {
-      if (listItems[i] instanceof Question) {
-        ((Question) listItems[i]).changeIndex(i + 1);
-      }
-    }
-  }
-
-
-  /**
-   * Clears all questions from app and database
-   */
-  public void clearAllQuestions() {
-    for (Component c : getComponents()) {
-      if (c instanceof Question) {
-        remove(c); // remove the question
-        updateNumbers(); // update the indexing of all items
-        revalidate();
-      }
-    }
-    this.setPreferredSize(new Dimension(400, 1000));
-    this.numQuestions = 0;
-    this.saveQuestions();
-  }
-
-  /**
-   * Removes one question from the App frame
-   */
-  public void removeSingle(Component x){
-    remove(x);
-    updateNumbers();
-    this.numQuestions -= 1;
-    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
-    repaint();
-    revalidate();
-    this.saveQuestions();
-  }
-
-  /**
-   * Loads questions from a file called "questions.txt"
-   * @return an ArrayList of question
-   */
-  public void loadQuestions(){
-    try {
-      URL url = new URL(URL);
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("PUT");
-      BufferedReader inLength = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-      String length = inLength.readLine();
-      inLength.close();
-      int leng = Integer.parseInt(length);
-      for (int i = 0; i < leng; i++){
-        String query = Integer.toString(i);
-        URL url2 = new URL(URL + "?=" + query);
-        HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
-        conn2.setRequestMethod("GET");
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
-        String temp = "";
-        String response = in.readLine();
-        while ((temp = in.readLine()) != null){
-          response = response + temp;
-        }
-        String[] parts = response.split("~`~");
-        Question q = this.createQuestion(parts[0]);
-        q.setAnswer(parts[1]);
-        in.close();
-      }
-      this.updateNumbers(); // Updates the numbers of the questions
-      this.numQuestions = leng;
-      this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
-      repaint();
-      revalidate();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
-
-  /**
-   * Saves questions to a file called "Questions.txt"
-   */
-  public void saveQuestions() {
-    try{
-      URL url = new URL(URL);
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("DELETE");
-      BufferedReader inLength = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-      inLength.close();
-    } catch (Exception ex){
-      ex.printStackTrace();
-    }
-
-    Component[] listItems = this.getComponents();
-    for (int i = 0; i < listItems.length; i++) {
-      if (listItems[i] instanceof Question) {
-        try{
-          URL url2 = new URL(URL);
-          HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
-          conn2.setRequestMethod("POST");
-          conn2.setDoOutput(true);
-          OutputStreamWriter out = new OutputStreamWriter(conn2.getOutputStream());
-          System.out.println(((Question)listItems[i]).questionName.getText() + "~`~" + ((Question)listItems[i]).getAnswer());
-          out.write(((Question)listItems[i]).questionName.getText() + "~`~" + ((Question)listItems[i]).getAnswer().trim());
-          out.flush();
-          out.close();
-          BufferedReader in = new BufferedReader(
-            new InputStreamReader(conn2.getInputStream())
-          );
-          in.close();
-        } catch (Exception eeex) {
-          eeex.printStackTrace();
-        }
-      }
-    }
-  }
-
-  /*
-   * Creates question with the label of given string transcription
-   */
-  public Question createQuestion(String transcription) {
-    Question question = new Question();
-    question.questionName.setText(transcription);
-    JButton trashCanButton = question.getTrashCan();
-            trashCanButton.addMouseListener(
-              new MouseAdapter() {
-                @override
-                public void mousePressed(MouseEvent e) {
-                  removeSingle(question);
-                }
-              }
-            );
-    JButton expandButton = question.getExpand();
-    expandButton.addMouseListener(
-      new MouseAdapter() {
-        @override
-        public void mousePressed(MouseEvent e) {
-          AppFrame.label.setText(question.getAnswer());
-        }
-      }
-    );
-    add(question);
-    this.numQuestions += 1;
-    this.setPreferredSize(new Dimension(400, 105 * this.numQuestions));
-    repaint();
-    revalidate();
-    updateNumbers();
-    return question;
-  }
-}
-
+import java.rmi.ConnectException;
 
 /*
  * Footer that contains ask a question button
@@ -292,7 +35,7 @@ class List extends JPanel {
 class Footer extends JPanel {
 
   JButton recordButton;
-
+  
   Color foregroundColor = new Color(200, 200, 200);
   Color backgroundColor = new Color(50, 50, 50);
   Color red = new Color(255, 0, 0);
@@ -303,7 +46,7 @@ class Footer extends JPanel {
     this.setPreferredSize(new Dimension(400, 60));
     this.setBackground(backgroundColor);
 
-    recordButton = new JButton("<html><p style='text-align:center;'>Ask Question</p></html>");
+    recordButton = new JButton("<html><p style='text-align:center;'>Start</p></html>");
     recordButton.setOpaque(true);
     recordButton.setBorderPainted(false);
     recordButton.setHorizontalAlignment(SwingConstants.CENTER);
@@ -328,8 +71,6 @@ class Footer extends JPanel {
  * Header that contains the title of app and clear all button
  */
 class Header extends JPanel {
-
-  JButton clearAllButton;
   
   Color foregroundColor = new Color(200, 200, 200);
   Color backgroundColor = new Color(50, 50, 50);
@@ -349,27 +90,8 @@ class Header extends JPanel {
     titleText.setHorizontalAlignment(JLabel.CENTER); // Align the text to the center
     nestedPanel.add(titleText, BorderLayout.CENTER);
 
-    // create the clear all button for the last 1/4 of the header
-    clearAllButton = new JButton("<html><p style='text-align:center;'>Clear<br>All</p></html>");
-    clearAllButton.setHorizontalAlignment(SwingConstants.CENTER);
-    clearAllButton.setVerticalAlignment(SwingConstants.CENTER);
-    clearAllButton.setFont(new Font("Sans-serif", Font.BOLD, 12));
-    clearAllButton.setBackground(backgroundColor);
-    clearAllButton.setForeground(foregroundColor);
-    clearAllButton.setBorder(BorderFactory.createLineBorder(foregroundColor));
-    clearAllButton.setBorder(new EmptyBorder(10, 20, 10, 20)); //set margins
-    clearAllButton.setFocusPainted(false); // disable text highlight
-    nestedPanel.add(clearAllButton, BorderLayout.EAST);
-
     this.setPreferredSize(new Dimension(400, 60)); // Size of the header
     this.setBackground(backgroundColor);
-  }
-
-  /**
-   * Getter method for clearAllButton
-   */
-  public JButton getClearAllButton() {
-    return clearAllButton;
   }
 }
 
@@ -389,15 +111,14 @@ class AppFrame extends JFrame {
   public JSplitPane splitPane; // split window for question history and answer display
   public JPanel answerPane; // custom JPanel to display answer in our split pane
   public JScrollPane answerScroll; // contains answer Pane to make it scrollable
-  static JTextField label; // added to answerPane to display text and change when needed
+  static JTextArea content; // added to answerPane to display text and change when needed
 
-  private JButton clearAllButton;
   private JButton recordButton;
+  public CommandHandler commhandler;
 
   AppFrame() {
 
-
-    this.setSize(1200, 1000); // 1000 width and 1000 height
+    this.setSize(1200, 1000); // 1200 width and 1000 height
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close on exit
     this.setVisible(true); // Make visible
 
@@ -407,31 +128,31 @@ class AppFrame extends JFrame {
 
     answerPane = new JPanel();
     answerPane.setBackground(darkGrey);
-    label = new JTextField();
-    label.setFont(new Font("Arial", Font.BOLD, 15));
-    label.setForeground(foregroundColor);
-    label.setBackground(darkGrey);
-    answerPane.add(label);
+    content = new JTextArea() ;
+    content.setLineWrap(true);
+    content.setWrapStyleWord(true);
+    content.setPreferredSize(new Dimension(400, 400));
+    content.setBorder(BorderFactory.createEmptyBorder(25, 0, 25, 0));
+
+    content.setFont(new Font("Arial", Font.BOLD, 15));
+    content.setForeground(foregroundColor);
+    content.setBackground(darkGrey);
+    answerPane.add(content);
 
     answerScroll = new JScrollPane(answerPane);
 
     this.add(header, BorderLayout.NORTH); // Add title bar on top of the screen
     this.add(footer, BorderLayout.SOUTH); // Add footer on bottom of the screen
-    // this.add(list, BorderLayout.CENTER); // Add list in middle of footer and title
     scrollPane = new JScrollPane(list);
 
-    list.setPreferredSize(new Dimension(400, 105 * list.numQuestions));
+    list.setPreferredSize(new Dimension(400, 105 * list.numPrompts));
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    // this.add(scrollPane);
 
     splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, answerScroll);
     splitPane.setBackground(darkGrey);
     this.add(splitPane);
 
     recordButton = footer.getRecordButton();
-    clearAllButton = header.getClearAllButton();
-
-    addListeners();
     revalidate();
   }
 
@@ -454,40 +175,44 @@ class AppFrame extends JFrame {
         public void mouseReleased(MouseEvent e) {
           recorder.stopRecording();
 
+          // try {
+          //   String questionTranscription = Whisper.getQuestion();
+          //   Question question = list.createQuestion(questionTranscription);
+          //   String answer = ChatGPT.getAnswer(questionTranscription);
+          //   question.setContent(answer);
+          //   label.setText(answer);
+          //   list.saveQuestions();
+          //   repaint();
+          //   revalidate();
+          // } catch (Exception w) {
+          //   w.printStackTrace();
+          // }
           try {
-            String questionTranscription = Whisper.getQuestion();
-            Question question = list.createQuestion(questionTranscription);
-            String answer = ChatGPT.getAnswer(questionTranscription);
-            question.setAnswer(answer);
-            label.setText(answer);
-            list.saveQuestions();
-            repaint();
-            revalidate();
-          } catch (Exception w) {
-            w.printStackTrace();
+            String transcription = Whisper.getQuestion();
+            commhandler.HandlePrompt(transcription);
+          } catch (Exception ex) {
+            ex.printStackTrace();
           }
         }
       }
     );
+  }
 
-    clearAllButton.addMouseListener(
-      new MouseAdapter(){
-        @override
-        public void mousePressed(MouseEvent e) {
-          list.clearAllQuestions();
-          repaint();
-          revalidate();
-        }
-      }
-    );
+  public void registerCommHandler(CommandHandler ch) {
+    this.commhandler = ch;
   }
 }
 
 public class GUI {
 
   public static void main(String args[]) {
-    AppFrame app = new AppFrame(); // Create the frame
-    app.list.loadQuestions();
+    // Create the frame
+    AppFrame app = new AppFrame();
+    PromptFactory pf = new PromptFactory();
+    CommandHandler ph = new CommandHandler(app, pf);
+    app.addListeners();
+
+    // app.list.loadQuestions();
     app.repaint();
     app.revalidate();
   }

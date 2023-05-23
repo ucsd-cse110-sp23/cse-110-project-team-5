@@ -3,28 +3,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-// class Pair {
-//     String first;
-//     String second;
-
-//     public Pair(String first, String second) {
-//         this.first = first;
-//         this.second = second;
-//     }
-//     public String getFirst() {
-//         return first;
-//     }
-//     public void setFirst(String first) {
-//         this.first = first;
-//     }
-//     public String getSecond() {
-//         return second;
-//     }
-//     public void setSecond(String second) {
-//         this.second = second;
-//     }
-// }
-
 public class MyHandler implements HttpHandler{
 
     static ArrayList<String> data;
@@ -94,7 +72,7 @@ public class MyHandler implements HttpHandler{
         String temp = "";
         while (scanner.hasNextLine()){
             temp = scanner.nextLine();
-          postData = postData + temp;
+            postData = postData + temp;
         }
         System.out.println(postData);
 
