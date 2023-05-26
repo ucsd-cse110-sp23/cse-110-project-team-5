@@ -1,4 +1,3 @@
-
 /**
  * This code was refactored from the original code found at:
  * https://copyassignment.com/to-do-list-app-in-java/ given to us by Lab4
