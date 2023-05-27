@@ -23,42 +23,12 @@ class PromptFactory {
   /*
    * Creates question with the label of given string transcription
    */
-  public Question createQuestion(String transcription) {
+  public Prompt createPrompt(String question, String answer) {
     //create question
-    Question question = new Question();
-    question.setLabel(transcription);
-
-    // Get answer
-    try {
-      String answer = ChatGPT.getAnswer(transcription);
-      question.setContent(answer);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return question;
+    Prompt p = new Prompt();
+    p.setLabel(question);
+    p.setContent(answer);
+    
+    return p;
   }
-
-  /*
-   * Handles incorrect prompt command
-   */
-  public WrongPrompt createWrongPrompt(String transcription) {
-    WrongPrompt wrongprompt = new WrongPrompt();
-    wrongprompt.setLabel(transcription);
-
-    wrongprompt.setContent("Invalid Command: \n\"" + transcription + "\"");
-    return wrongprompt;
-  }
-
-  // public createEmailPrompt createEmail(String transcription) {
-  //   createEmailPrompt p = new Prompt();
-  //   createEmailPrompt.label.setText(transcription);
-  //   return createEmailPrompt;
-  // }
-
-  // public sendEmailPrompt createSendEmail(String transcription) {
-  //   Prompt sendEmailPrompt = new Prompt();
-  //   sendEmailPrompt.label.setText(transcription);
-  //   return sendEmailPrompt;
-  // }
-
 }

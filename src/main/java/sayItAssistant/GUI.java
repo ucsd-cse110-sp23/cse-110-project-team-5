@@ -186,12 +186,14 @@ class AppFrame extends JFrame {
           // } catch (Exception w) {
           //   w.printStackTrace();
           // }
-          try {
-            String transcription = Whisper.getQuestion();
-            commhandler.HandlePrompt(transcription);
-          } catch (Exception ex) {
-            ex.printStackTrace();
-          }
+          // try {
+          //   String transcription = Whisper.getQuestion();
+          //   commhandler.HandlePrompt(transcription);
+          //   // list.update();
+          // } catch (Exception ex) {
+          //   ex.printStackTrace();
+          // }
+          // list.update();
         }
       }
     );
@@ -208,7 +210,7 @@ public class GUI {
     // Create the frame
     AppFrame app = new AppFrame();
     PromptFactory pf = new PromptFactory();
-    CommandHandler ph = new CommandHandler(app, pf);
+    CommandHandler ph = new CommandHandler();
     app.addListeners();
 
     // app.list.loadQuestions();

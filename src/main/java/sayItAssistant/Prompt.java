@@ -18,7 +18,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.*;
 
-abstract class AbstractPrompt extends JPanel {
+class Prompt extends JPanel {
 
   JLabel index;
   JTextField label;
@@ -30,7 +30,7 @@ abstract class AbstractPrompt extends JPanel {
 
   MouseListener ml;
 
-  public void setup() {
+  public Prompt() {
     this.setPreferredSize(new Dimension(400, 20)); // set size of question
     this.setBackground(darkGray); // set background color of question
     this.setLayout(new BorderLayout()); // set layout of question
@@ -94,34 +94,3 @@ abstract class AbstractPrompt extends JPanel {
 }
 
 
-class Question extends AbstractPrompt {
-
-  Question() {
-    setup(); // sets up with jpanel configurations from AbstractPrompt
-  }
-
-}
-
-class CreateEmail extends AbstractPrompt {
-
-  CreateEmail() {
-    setup(); // sets up with jpanel configurations from AbstractPrompt
-  }
-
-}
-
-class SendEmail extends AbstractPrompt {
-
-  SendEmail() {
-    setup(); // sets up with jpanel configurations from AbstractPrompt
-  }
-
-}
-
-class WrongPrompt extends AbstractPrompt {
-
-  WrongPrompt() {
-    setup(); // sets up with jpanel configurations from AbstractPrompt
-  }
-  
-}
