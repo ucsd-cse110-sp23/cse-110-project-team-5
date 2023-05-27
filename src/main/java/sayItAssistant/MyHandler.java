@@ -6,6 +6,7 @@ import java.util.*;
 public class MyHandler implements HttpHandler{
 
     static ArrayList<String> data;
+    public CommandHandler commandHandler = new CommandHandler();
 
     public MyHandler(ArrayList<String> data){
         this.data = data;
@@ -28,9 +29,9 @@ public class MyHandler implements HttpHandler{
             } else if (method.equals("POST")) {
                 this.handlePost(httpExchange);
             } else if (method.equals("PUT")){
-                response = this.getDataLength();
+                response = this.handlePut(httpExchange);
             } else if (method.equals("DELETE")){
-                this.clearData();
+                clearData();
             } else {
                 throw new Exception ("Not Valid Request Method");
             }
@@ -48,21 +49,33 @@ public class MyHandler implements HttpHandler{
     }
 
     public String handleGet(HttpExchange httpExchange) throws IOException {
+        // InputStream inStream = httpExchange.getRequestBody();
+        // Scanner scanner = new Scanner(inStream);
+        // String putData = scanner.nextLine();
+        // String email = putData.substring(
+        //     0,
+        //     putData.indexOf("~")
+        // ), password = putData.substring(putData.indexOf("~") + 1);
+
+        // scanner.close();
+
+        // return email;
         String response = "Invalid GET Request";
+        String email = "";
+        String password = "";
         URI uri = httpExchange.getRequestURI();
         String query = uri.getRawQuery();
+        String emailAndPassword = "";
         if (query != null){
-            String message = query.substring(query.indexOf("=")+1);
-            int index = Integer.parseInt(message);
-            try{
-                String content = data.get(index);
-                response = content;
-                System.out.println(content);
-            } catch (Exception e){
-                response = "Index out of bound";
-            }
+            // System.out.println("Query is not null!");
+            emailAndPassword = query.substring(query.indexOf("=")+1);
+            email = emailAndPassword.substring(0, emailAndPassword.indexOf("~"));
+            password = emailAndPassword.substring(emailAndPassword.indexOf("~") + 1);
+            response = commandHandler.getAccount(email, emailAndPassword);
         }
+        System.out.println(response);
         return response;
+        // return response
     }
 
     private void handlePost(HttpExchange httpExchange) throws IOException {
@@ -74,11 +87,28 @@ public class MyHandler implements HttpHandler{
             temp = scanner.nextLine();
             postData = postData + temp;
         }
+        System.out.println("Why am i in post?");
         System.out.println(postData);
 
         // Store data in the Arraylist
         data.add(postData);
      
         scanner.close();
+    }
+
+    private String handlePut(HttpExchange httpExchange) throws IOException {
+        InputStream inStream = httpExchange.getRequestBody();
+        Scanner scanner = new Scanner(inStream);
+        String putData = scanner.nextLine();
+        String email = putData.substring(
+            0,
+            putData.indexOf("~")
+        ), password = putData.substring(putData.indexOf("~") + 1);
+
+        commandHandler.createAccount(email, password);
+        String response = email + " " + password;
+        data.add(response);
+        scanner.close();
+        return response;
     }
 }

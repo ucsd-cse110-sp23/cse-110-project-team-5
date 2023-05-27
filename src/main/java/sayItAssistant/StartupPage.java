@@ -7,11 +7,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileOutputStream;
+import java.io.*;
+import java.io.FileNotFoundException;  // Import this class to handle errors
+import java.util.Scanner; // Import the Scanner class to read text files
+import java.net.*;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 class CreateAccountPage extends JFrame {
     private JTextField emailTextField;
     private JPasswordField passwordField;
     private JPasswordField verifyPasswordField;
+    public final String URL = "http://localhost:8100/";
     Color red = new Color(255, 0, 0);
     Color darkRed = new Color (200, 0, 0);
     Color darkGrey = new Color (50,50,50);
@@ -73,9 +81,9 @@ class CreateAccountPage extends JFrame {
                 String password = new String(passwordField.getPassword());
                 String verifyPassword = new String(verifyPasswordField.getPassword());
 
-                System.out.println(email);
-                System.out.println(password);
-                System.out.println(verifyPassword);
+                // System.out.println(email);
+                // System.out.println(password);
+                // System.out.println(verifyPassword);
 
                 if (password.equals(verifyPassword)) {
                     JOptionPane.showMessageDialog(CreateAccountPage.this, "Login successful!");
@@ -99,6 +107,8 @@ class CreateAccountPage extends JFrame {
                         }
                     }
                     AppFrame frame = new AppFrame();
+                    createAccount(email, password);
+
                     
                 } else {
                     JOptionPane.showMessageDialog(CreateAccountPage.this, "Passwords do not match!");
@@ -113,17 +123,42 @@ class CreateAccountPage extends JFrame {
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true);
     }
+
+    public boolean createAccount(String email, String password) {
+        try {
+            URL url = new URL(URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("PUT");
+            conn.setDoOutput(true);
+            OutputStreamWriter out = new OutputStreamWriter(
+              conn.getOutputStream()
+            );
+            out.write(email + "~" + password);
+            out.flush();
+            out.close();
+
+            BufferedReader response = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String emailPassword = response.readLine();
+            System.out.println("In StartupPage, email + password: " + emailPassword);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error: No Connection to Server");
+        } 
+        return true;
+    }
 }
 
 
 class LoginPage extends JFrame {
     private JTextField emailTextField;
     private JPasswordField passwordField;
+    JToggleButton autoLogin;
     Color red = new Color(255, 0, 0);
     Color darkRed = new Color (200, 0, 0);
     Color darkGrey = new Color (50,50,50);
     Color foregroundColor = new Color(200, 200, 200);
     Color lightGrey = new Color(100, 100, 100);
+    public final String URL = "http://localhost:8100/";
 
     public LoginPage() {
         super("Login Page");
@@ -140,7 +175,7 @@ class LoginPage extends JFrame {
         emailTextField = new JTextField(20);
         panel.add(emailLabel);
         panel.add(emailTextField);
-        emailLabel.setForeground(lightGrey);
+        emailLabel.setForeground(foregroundColor);
 
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(foregroundColor);
@@ -148,7 +183,7 @@ class LoginPage extends JFrame {
         panel.add(passwordLabel);
         panel.add(passwordField);
 
-        JToggleButton autoLogin = new JToggleButton();
+        autoLogin = new JToggleButton();
         autoLogin.setText("Auto Login");
         autoLogin.setFocusPainted(false);
         autoLogin.setContentAreaFilled(false);
@@ -156,12 +191,7 @@ class LoginPage extends JFrame {
         autoLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean selected = autoLogin.isSelected();
-                if (selected) {
-                    autoLogin.setBackground(Color.GREEN);
-                } else {
-                    autoLogin.setBackground(Color.RED);
-                }
+                autoLoginSelect();
             }
         });
 
@@ -173,8 +203,8 @@ class LoginPage extends JFrame {
                 // Handle login button click event
                 String email = emailTextField.getText();
                 String password = new String(passwordField.getPassword());
-                System.out.println(email);
-                System.out.println(password);
+                // System.out.println(email);
+                // System.out.println(password);
 
                 if (autoLogin.isSelected()) {
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/sayItAssistant/LoginInfo.txt"))) {
@@ -195,7 +225,9 @@ class LoginPage extends JFrame {
                     }
                 }
 
-                AppFrame frame = new AppFrame();
+                // Before you create, try to get this account from the database
+                boolean loggedIn = logIn(email, password);
+                // JOptionPane.showMessageDialog(null, "Error: Account not found");
                 // verify account
             }
         });
@@ -207,6 +239,72 @@ class LoginPage extends JFrame {
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true);
     }
+
+    public boolean logIn(String email, String password) {
+        boolean result = false;
+        String query = email + "~" + password;
+        try {
+            URL url = new URL(URL + "?=" + query);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            /////////////////////////////////////////
+            BufferedReader response = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String jsonString = response.readLine();
+            System.out.println("From LogIn(): " + jsonString);
+
+            if (jsonString.equals("No matching documents found.")) {
+                result = false;
+                JOptionPane.showMessageDialog(null, "Error: Account does not exist");
+            }
+            else {
+                AppFrame app = new AppFrame();
+                app.list.update(jsonString);
+                result = true;
+            }
+
+            } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error: No Connection to Server");
+        } 
+        return result;
+    }
+
+    public boolean autoLoad() {
+        try {
+            File myObj = new File("src/main/java/sayItAssistant/LoginInfo.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            String email = "";
+            String password = "";
+            if (myObj.length() == 0) {
+                myReader.close();
+                return false;
+            }
+            email = myReader.nextLine();
+            password = myReader.nextLine();
+  
+            myReader.close();
+
+            this.emailTextField.setText(email);
+            this.passwordField.setText(password);
+            return true;
+          } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+            return false;
+          }
+    }
+
+    public void autoLoginSelect() {
+        boolean selected = autoLogin.isSelected();
+            if (selected) {
+                autoLogin.setBackground(Color.GREEN);
+            } else {
+                autoLogin.setBackground(Color.RED);
+            }
+    }
+    
 }
 
 
@@ -259,6 +357,13 @@ public class StartupPage extends JFrame {
                             public void run() {
                                 LoginPage page = new LoginPage();
                                 page.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+                                Boolean result = page.autoLoad();
+                                if (result) {
+                                    page.autoLogin.setSelected(true);
+                                    page.autoLoginSelect();
+                                }
+                                
                             }
                         });
             }

@@ -16,6 +16,23 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.net.*;
+import java.net.http.HttpResponse.ResponseInfo;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import static com.mongodb.client.model.Filters.eq;
+
+import com.mongodb.client.model.UpdateOptions;
+import org.bson.json.JsonWriterSettings;
+
+
+import java.util.Random;
+
+
+import static java.util.Arrays.asList;
 
 
 class CommandHandler {
@@ -23,13 +40,10 @@ class CommandHandler {
   PromptFactory pf;
   AppFrame app;
   //Database db;
+  public final String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
 
-  CommandHandler(AppFrame appframe, PromptFactory pf /*, Database db */) {
-    this.lst = appframe.list;
-    this.pf = pf;
-    this.app = appframe;
-    //this.db = db;
-    app.registerCommHandler(this);
+  CommandHandler() {
+    
   }
 
   void HandlePrompt(String transcriptionFromWhisper) {
@@ -59,30 +73,81 @@ class CommandHandler {
     }
   }
 
+  String createAccount(String email, String password) {
+    // System.out.println(password);
+    try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+      MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+      MongoCollection<Document> users = sayItAssistant.getCollection("users");
+
+
+      // Create the filter
+      Document filter = new Document("email", email);
+
+      // Create the update for password
+      Document update = new Document("$set", new Document("password", password));
+
+      // Perform the upsert operation
+      users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+      // Create the update for prompts (empty)
+      update = new Document("$set", new Document("prompts", asList()));
+      users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+      String response = "";
+      Document doc = users.find(eq("email", email)).first();
+      if (doc != null) {
+          response = doc.toJson();
+      } else {
+          response = "No matching documents found.";
+      }
+      
+      System.out.println(response);
+      return response;
+    }
+  }
+
+  String getAccount(String email, String password) {
+    String response = "No Account Found";
+    try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+      MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+      MongoCollection<Document> users = sayItAssistant.getCollection("users");
+
+      // Find account and returns its json as a string
+      Document doc = users.find(eq("email", email)).first();
+      if (doc != null) {
+          response = doc.toJson();
+      } else {
+          response = "No matching documents found.";
+      }
+    }
+
+    return response;
+  }
+
   void question(String transcriptionFromWhisper) {
-    Question question = pf.createQuestion(transcriptionFromWhisper);
-    lst.addPrompt(question);
-    app.content.setText(question.getContent());
-    app.repaint();
-    app.revalidate();
+    // Question question = pf.createQuestion(transcriptionFromWhisper);
+    // lst.addPrompt(question);
+    // app.content.setText(question.getContent());
+    // app.repaint();
+    // app.revalidate();
     // Add to server
   }
 
   void deletePrompt() {
-    int deletedIndex = lst.deleteSelected();
-    System.out.println(deletedIndex);
-    app.content.setText("");
-    app.repaint();
-    app.revalidate();
+    // int deletedIndex = lst.deleteSelected();
+    // System.out.println(deletedIndex);
+    // app.content.setText("");
+    // app.repaint();
+    // app.revalidate();
     // clear from server
     //db.delete(deletedIndex);
   }
 
   void clearAll() {
-    lst.clearAll();
-    app.content.setText("");
-    app.repaint();
-    app.revalidate();
+    // lst.clearAll();
+    // app.content.setText("");
+    // app.repaint();
+    // app.revalidate();
     // clear everything off server
     //db.clearAll();
   }
@@ -105,11 +170,11 @@ class CommandHandler {
   void wrongCommand(String transcription) {
     //InvalidCommand invalidCommand = pf.createInvalidCommand(transcriptionFromWhisper);
     //app.list.add(invalidCommand);
-    WrongPrompt wp = pf.createWrongPrompt(transcription);
-    lst.addPrompt(wp);
-    app.content.setText(wp.getContent());
-    app.repaint();
-    app.revalidate();
+    // WrongPrompt wp = pf.createWrongPrompt(transcription);
+    // lst.addPrompt(wp);
+    // app.content.setText(wp.getContent());
+    // app.repaint();
+    // app.revalidate();
   }
 
 

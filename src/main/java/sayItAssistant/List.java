@@ -1,12 +1,15 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
+// import org.json.simple.JSONArray;
+// import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.json.simple.parser.*;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 import javax.swing.border.Border;
 import java.io.File;
@@ -29,7 +32,9 @@ class List extends JPanel {
   public final String URL = "http://localhost:8100/";
 
   public int numPrompts = 0;
-  AbstractPrompt selectedPrompt = null;
+  Prompt selectedPrompt = null;
+  PromptFactory pf = new PromptFactory();
+  JSONParser jp = new JSONParser();
 
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
 
@@ -42,149 +47,57 @@ class List extends JPanel {
     this.selectedPrompt = this.findSelected();
   }
 
-  public AbstractPrompt findSelected() {
+  void update(String jsonString) {
+    //clear everything first
+    this.clearAll();
+    // Read the json file, and use addPrompt
+    JSONObject jsonObject = new JSONObject(jsonString);
+    // Access the "prompts" array
+    JSONArray promptsArray = jsonObject.getJSONArray("prompts");
+
+    // Iterate through the prompts array
+    for (int i = 0; i < promptsArray.length(); i++) {
+        JSONObject prompt = promptsArray.getJSONObject(i);
+
+        // Access question and answer values in each prompt
+        String question = prompt.getString("question");
+        String answer = prompt.getString("answer");
+
+        // Create the JPanels
+        Prompt p = pf.createPrompt(question, answer);
+        addPrompt(p);
+    }
+  }
+
+  public Prompt findSelected() {
     Component[] listItems = this.getComponents();
 
     for (int i = 0; i < listItems.length; i++) {
-      if (listItems[i] instanceof AbstractPrompt) {
-        if (((AbstractPrompt) listItems[i]).isSelected()) {
+      if (listItems[i] instanceof Prompt) {
+        if (((Prompt) listItems[i]).isSelected()) {
           // System.out.println("found selected");
-          this.selectedPrompt = ((AbstractPrompt) listItems[i]);
-          return ((AbstractPrompt) listItems[i]);
+          this.selectedPrompt = ((Prompt) listItems[i]);
+          return ((Prompt) listItems[i]);
         }
       }
     }
     return null;
   }
 
-  /**
-   * Loads questions from a file called "questions.txt"
-   * @return an ArrayList of question
-   */
-  // public void loadQuestions(){
-  //   try {
-  //     URL url = new URL(URL);
-  //     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-  //     conn.setRequestMethod("PUT");
-  //     BufferedReader inLength = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-  //     String length = inLength.readLine();
-  //     inLength.close();
-  //     int leng = Integer.parseInt(length);
-  //     for (int i = 0; i < leng; i++){
-  //       System.out.println("Loop " + i);
-  //       String query = Integer.toString(i);
-  //       URL url2 = new URL(URL + "?=" + query);
-  //       HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
-  //       conn2.setRequestMethod("GET");
-  //       BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
-  //       String temp = "";
-  //       String response = in.readLine();
-  //       while ((temp = in.readLine()) != null){
-  //         response = response + temp;
-  //       }
-  //       System.out.println(response);
-  //       String[] parts = response.split("~`~");
-  //       Question q = this.createQuestion(parts[0]);
-  //       q.setContent(parts[1]);
-  //       in.close();
-  //     }
-  //     this.updateNumbers(); // Updates the numbers of the questions
-  //     this.numPrompts = leng;
-  //     this.setPreferredSize(new Dimension(400, 105 * this.numPrompts));
-  //     repaint();
-  //     revalidate();
-  //   } catch (Exception ex) {
-  //     ex.printStackTrace();
-  //   }
-  // }
-
-
-  /**
-   * Saves questions to a file called "Questions.txt"
-   */
-  // public void saveQuestions() {
-  //   System.out.println("Saving");
-  //   try{
-  //     URL url = new URL(URL);
-  //     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-  //     conn.setRequestMethod("DELETE");
-  //     BufferedReader inLength = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-  //     inLength.close();
-  //   } catch (Exception ex){
-  //     ex.printStackTrace();
-  //   }
-
-  //   Component[] listItems = this.getComponents();
-  //   for (int i = 0; i < listItems.length; i++) {
-  //     if (listItems[i] instanceof Prompt) {
-  //       try{
-  //         URL url2 = new URL(URL);
-  //         HttpURLConnection conn2 = (HttpURLConnection) url2.openConnection();
-  //         conn2.setRequestMethod("POST");
-  //         conn2.setDoOutput(true);
-  //         OutputStreamWriter out = new OutputStreamWriter(conn2.getOutputStream());
-  //         System.out.println(((Prompt)listItems[i]).label.getText() + "~`~" + ((Prompt)listItems[i]).getContent());
-  //         out.write(((Prompt)listItems[i]).label.getText() + "~`~" + ((Prompt)listItems[i]).getContent().trim());
-  //         out.flush();
-  //         out.close();
-  //         BufferedReader in = new BufferedReader(
-  //           new InputStreamReader(conn2.getInputStream())
-  //         );
-  //         in.close();
-  //       } catch (Exception eeex) {
-  //         eeex.printStackTrace();
-  //       }
-  //     }
-  //   }
-  // }
-
-  /*
-   * Creates question with the label of given string transcription
-   */
-  // public Prompt createQuestion(String transcription) {
-  //   Prompt question = new Prompt();
-  //   question.label.setText(transcription);
-  //   JButton trashCanButton = question.getDeleteButton();
-  //           trashCanButton.addMouseListener(
-  //             new MouseAdapter() {
-  //               @override
-  //               public void mousePressed(MouseEvent e) {
-  //                 removeSingle(question);
-  //               }
-  //             }
-  //           );
-  //   JButton expandButton = question.getExpand();
-  //   expandButton.addMouseListener(
-  //     new MouseAdapter() {
-  //       @override
-  //       public void mousePressed(MouseEvent e) {
-  //         AppFrame.label.setText(question.getContent());
-  //       }
-  //     }
-  //   );
-  //   add(question);
-  //   this.numPrompts += 1;
-  //   this.setPreferredSize(new Dimension(400, 105 * this.numPrompts));
-  //   repaint();
-  //   revalidate();
-  //   updateNumbers();
-  //   return question;
-  // }
-
   public void deselectAll() {
     Component[] listItems = this.getComponents();
 
     for (int i = 0; i < listItems.length; i++) {
-      if (listItems[i] instanceof AbstractPrompt) {
-        ((AbstractPrompt) listItems[i]).selected = false;
-        ((AbstractPrompt) listItems[i]).setBackground(new Color(100, 100, 100));
-        ((AbstractPrompt) listItems[i]).repaint();
-        ((AbstractPrompt) listItems[i]).revalidate();
+      if (listItems[i] instanceof Prompt) {
+        ((Prompt) listItems[i]).selected = false;
+        ((Prompt) listItems[i]).setBackground(new Color(100, 100, 100));
+        ((Prompt) listItems[i]).repaint();
+        ((Prompt) listItems[i]).revalidate();
       }
     }
   }
 
-  public void addPrompt(AbstractPrompt p) {
+  public void addPrompt(Prompt p) {
     this.add(p);
 
     // Add selected listener to question
@@ -230,8 +143,8 @@ class List extends JPanel {
     Component[] listItems = this.getComponents();
 
     for (int i = 0; i < listItems.length; i++) {
-      if (listItems[i] instanceof AbstractPrompt) {
-        ((AbstractPrompt) listItems[i]).changeIndex(i + 1);
+      if (listItems[i] instanceof Prompt) {
+        ((Prompt) listItems[i]).changeIndex(i + 1);
       }
     }
   }
@@ -249,17 +162,4 @@ class List extends JPanel {
     this.numPrompts = 0;
     // this.saveQuestions();
   }
-
-  // /**
-  //  * Removes one question from the App frame
-  //  */
-  // public void removeSingle(Component x){
-  //   remove(x);
-  //   updateNumbers();
-  //   this.numPrompts -= 1;
-  //   this.setPreferredSize(new Dimension(400, 105 * this.numPrompts));
-  //   repaint();
-  //   revalidate();
-  //   // this.saveQuestions();
-  // }
 }
