@@ -1,6 +1,6 @@
 SayItAssistant is an app that can take questions in the form of voice inputs to answer questions.
 
-Download and Setup:
+Download and Setup: ihblinion
 
 1. Navigate to https://github.com/ucsd-cse110-sp23/cse-110-project-team-5
 2. Switch branches by clicking on "main", then click on the branch named "MS1-Demo".
