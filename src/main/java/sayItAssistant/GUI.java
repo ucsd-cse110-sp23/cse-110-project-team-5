@@ -11,11 +11,15 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.swing.border.Border;
@@ -27,6 +31,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.*;
 import java.rmi.ConnectException;
+
+import javax.sound.sampled.*;
+import java.io.BufferedInputStream;
+import java.net.Socket;
+import java.io.FileInputStream;
 
 /*
  * Footer that contains ask a question button
@@ -115,6 +124,8 @@ class AppFrame extends JFrame {
   private JButton recordButton;
   public CommandHandler commhandler;
 
+  public final String URL = "http://localhost:8100/";
+
   AppFrame() {
 
     this.setSize(1200, 1000); // 1200 width and 1000 height
@@ -153,7 +164,32 @@ class AppFrame extends JFrame {
 
     recordButton = footer.getRecordButton();
     revalidate();
+    addListeners();
   }
+
+  public void copyStream( InputStream is, OutputStream os) {
+    final int buffer_size = 4096;
+    try {
+
+        byte[] bytes = new byte[buffer_size];
+        int k=-1;
+        double prog=0;
+        while ((k = is.read(bytes, 0, bytes.length)) > -1) {
+            if(k != -1) {
+                os.write(bytes, 0, k);
+                prog=prog+k;
+                double progress = ((long) prog)/1000;///size;
+                System.out.println("UPLOADING: "+progress+" kB");
+            }
+        }
+        os.flush();
+        is.close();
+        os.close();
+    } catch (Exception ex) {
+        System.out.println("File to Network Stream Copy error "+ex);
+    }
+}
+
 
   /**
    * This method adds mouse listeners to the record button 
@@ -174,27 +210,100 @@ class AppFrame extends JFrame {
         public void mouseReleased(MouseEvent e) {
           recorder.stopRecording();
 
-          // try {
-          //   String questionTranscription = Whisper.getQuestion();
-          //   Question question = list.createQuestion(questionTranscription);
-          //   String answer = ChatGPT.getAnswer(questionTranscription);
-          //   question.setContent(answer);
-          //   label.setText(answer);
-          //   list.saveQuestions();
-          //   repaint();
-          //   revalidate();
-          // } catch (Exception w) {
-          //   w.printStackTrace();
-          // }
-          // try {
-          //   String transcription = Whisper.getQuestion();
-          //   commhandler.HandlePrompt(transcription);
-          //   // list.update();
-          // } catch (Exception ex) {
-          //   ex.printStackTrace();
-          // }
-          // list.update();
+          
+          try{
+            URL url = new URL(URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("X-Arg", "AccessKey=3fvfg985-2830-07ce-e998-4e74df");
+            conn.setRequestProperty("Content-Type", "audio/wav");
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            String wavpath = "newQuestion.wav"; //audio.wav";
+            File wavfile = new File(wavpath);
+            boolean success = true;
+
+            String charset="UTF-8";
+            String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
+            String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+
+            OutputStream output = null;
+            PrintWriter writer = null;
+            try {
+                output = conn.getOutputStream();
+                writer = new PrintWriter(new OutputStreamWriter(output, charset), true);
+                byte [] music = new byte[(int) wavfile.length()];//size & length of the file
+                InputStream             is  = new FileInputStream       (wavfile);
+                BufferedInputStream bis = new BufferedInputStream   (is, 16000);
+                DataInputStream dis = new DataInputStream       (bis);      //  Create a DataInputStream to read the audio data from the saved file
+                int i = 0;
+                copyStream(dis,output);
+            }
+            catch(Exception eee){
+
+            }
+
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("POST Response Code : " + responseCode + " , MSG: " + conn.getResponseMessage());
+
+            if (responseCode == HttpURLConnection.HTTP_OK) { //success
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+            } else {
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                System.out.println("POST FAILED: " + response.toString());
+
+            }
+          } catch (Exception exx) {
+            
+          }
         }
+          
+          /*
+          try{
+            URL url = new URL(URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+            
+            // FOR RIGHT NOW, JUST SEND THE emailOfUser~TRANSCRIPTION, LATER WE CAN SEND THE AUDIO FILE
+            String transcription = Whisper.getQuestion();
+            out.write(emailOfUser + "~" + transcription);
+            out.flush();
+            out.close();
+            BufferedReader response = new BufferedReader(
+              new InputStreamReader(conn.getInputStream())
+            );
+
+            String jsonString = response.readLine();
+            response.close();
+            System.out.println(jsonString);
+
+            // Pass in JSON response String into list.update
+            list.update(jsonString);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          */
+
+          
+        
       }
     );
   }
@@ -208,14 +317,14 @@ public class GUI {
 
   public static void main(String args[]) {
     // Create the frame
-    AppFrame app = new AppFrame();
+    // AppFrame app = new AppFrame();
     PromptFactory pf = new PromptFactory();
     CommandHandler ph = new CommandHandler();
-    app.addListeners();
+    // app.addListeners();
 
     // app.list.loadQuestions();
-    app.repaint();
-    app.revalidate();
+    // app.repaint();
+    // app.revalidate();
   }
 }
 
