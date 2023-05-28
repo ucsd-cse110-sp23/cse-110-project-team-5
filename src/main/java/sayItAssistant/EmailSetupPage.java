@@ -1,4 +1,3 @@
-package src.main.java.sayItAssistant;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
