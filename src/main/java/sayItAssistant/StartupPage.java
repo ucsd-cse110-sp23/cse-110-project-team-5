@@ -106,8 +106,10 @@ class CreateAccountPage extends JFrame {
                             System.out.println("An error occurred while clearing the file: " + ex.getMessage());
                         }
                     }
-                    AppFrame frame = new AppFrame();
+
+                    // This creates account on database and gives commandhandler on server this users email
                     createAccount(email, password);
+                    AppFrame frame = new AppFrame();
 
                     
                 } else {

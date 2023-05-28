@@ -27,7 +27,7 @@ public class MyHandler implements HttpHandler{
             if (method.equals("GET")){
                 response = this.handleGet(httpExchange);
             } else if (method.equals("POST")) {
-                this.handlePost(httpExchange);
+                response = this.handlePost(httpExchange);
             } else if (method.equals("PUT")){
                 response = this.handlePut(httpExchange);
             } else if (method.equals("DELETE")){
@@ -49,17 +49,7 @@ public class MyHandler implements HttpHandler{
     }
 
     public String handleGet(HttpExchange httpExchange) throws IOException {
-        // InputStream inStream = httpExchange.getRequestBody();
-        // Scanner scanner = new Scanner(inStream);
-        // String putData = scanner.nextLine();
-        // String email = putData.substring(
-        //     0,
-        //     putData.indexOf("~")
-        // ), password = putData.substring(putData.indexOf("~") + 1);
-
-        // scanner.close();
-
-        // return email;
+        System.out.println("I am in GET");
         String response = "Invalid GET Request";
         String email = "";
         String password = "";
@@ -71,6 +61,9 @@ public class MyHandler implements HttpHandler{
             emailAndPassword = query.substring(query.indexOf("=")+1);
             email = emailAndPassword.substring(0, emailAndPassword.indexOf("~"));
             password = emailAndPassword.substring(emailAndPassword.indexOf("~") + 1);
+
+            // Set the commandHandlers email
+            commandHandler.setEmail(email);
             response = commandHandler.getAccount(email, emailAndPassword);
         }
         System.out.println(response);
@@ -78,25 +71,29 @@ public class MyHandler implements HttpHandler{
         // return response
     }
 
-    private void handlePost(HttpExchange httpExchange) throws IOException {
+    private String handlePost(HttpExchange httpExchange) throws IOException {
+        String response = "";
+        System.out.println("I am in POST");
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
-        String postData = scanner.nextLine();
-        String temp = "";
-        while (scanner.hasNextLine()){
-            temp = scanner.nextLine();
-            postData = postData + temp;
-        }
-        System.out.println("Why am i in post?");
-        System.out.println(postData);
 
-        // Store data in the Arraylist
-        data.add(postData);
+        // EVENTUALLY: PARSE THE AUDIO FILE EMAIL IS ALREADY SET IN COMMAND HANDLER
+        // NO NEED TO SEND EMAIL TO COMMANDHANDLER
+        String postData = scanner.nextLine();
+        String email = postData.substring(
+            0,
+            postData.indexOf("~")
+        ), transcriptionFromWhisper = postData.substring(postData.indexOf("~") + 1);
+        
+
+        response = commandHandler.HandlePrompt(transcriptionFromWhisper);
      
         scanner.close();
+        return response;
     }
 
     private String handlePut(HttpExchange httpExchange) throws IOException {
+        System.out.println("I am in PUT");
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
         String putData = scanner.nextLine();
@@ -105,6 +102,7 @@ public class MyHandler implements HttpHandler{
             putData.indexOf("~")
         ), password = putData.substring(putData.indexOf("~") + 1);
 
+        commandHandler.setEmail(email);
         commandHandler.createAccount(email, password);
         String response = email + " " + password;
         data.add(response);
