@@ -1,3 +1,4 @@
+package src.main.java.sayItAssistant;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -238,7 +239,7 @@ class CommandHandler {
   }
   
   void setUpEmail() {
-    // create a new pop up window, handle all that stuff in its class 
+    // create a new pop up window, handle all that stuff in its class
   }
 
   void createEmail() {
