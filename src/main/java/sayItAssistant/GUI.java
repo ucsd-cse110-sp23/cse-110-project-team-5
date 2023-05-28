@@ -270,7 +270,7 @@ class AppFrame extends JFrame {
 
             }
           } catch (Exception exx) {
-            
+            exx.printStackTrace();
           }
         }
           

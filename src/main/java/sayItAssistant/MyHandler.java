@@ -76,6 +76,30 @@ public class MyHandler implements HttpHandler{
         String response = "";
         System.out.println("I am in POST");
         InputStream inStream = httpExchange.getRequestBody();
+
+        File audioFile = new File("audioFile.wav");
+        try {
+            byte[] buffer = new byte[2 * 1024];
+            int readBytes;
+            FileOutputStream outputStream = new FileOutputStream(audioFile);
+            try (InputStream in = inStream){
+                    while ((readBytes = in.read(buffer)) > 0) {
+                        outputStream.write(buffer, 0, readBytes);
+                   }
+               }
+            outputStream.close();
+            
+            String transcription = Whisper.getQuestion();
+            System.out.println(transcription);
+            response = commandHandler.HandlePrompt(transcription);
+        }catch(Exception exception)
+        {
+            System.out.println("Couldn't process the audio");
+        }
+        System.out.println("Success: " + response);      
+
+        return response;
+        /* 
         Scanner scanner = new Scanner(inStream);
 
         // EVENTUALLY: PARSE THE AUDIO FILE EMAIL IS ALREADY SET IN COMMAND HANDLER
@@ -91,6 +115,7 @@ public class MyHandler implements HttpHandler{
      
         scanner.close();
         return response;
+        */
     }
 
     private String handlePut(HttpExchange httpExchange) throws IOException {
