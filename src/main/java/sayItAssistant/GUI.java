@@ -258,6 +258,9 @@ class AppFrame extends JFrame {
                 }
                 in.close();
 
+                String jsonString = response.toString();
+                list.update(jsonString);
+
             } else {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
                 String inputLine;

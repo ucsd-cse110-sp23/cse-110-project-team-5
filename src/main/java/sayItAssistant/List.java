@@ -107,6 +107,23 @@ class List extends JPanel {
         public void mousePressed(MouseEvent e) {
           deselectAll();
           p.selected = true;
+          selectedPrompt = p;
+
+          try {
+            String query = p.label.getText();
+            URL url = new URL(URL + "?=" + query);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+
+
+            BufferedReader in = new BufferedReader(
+              new InputStreamReader(conn.getInputStream())
+            );
+            String response = in.readLine();
+            in.close();
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
           p.setBackground(new Color(188, 226, 158));
           AppFrame.content.setText(p.getContent());
           repaint();

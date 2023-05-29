@@ -17,10 +17,6 @@ public class MyHandler implements HttpHandler{
         return Integer.toString(data.size());
     }
 
-    public static void clearData() {
-        data.clear();
-    }
-
     public void handle(HttpExchange httpExchange) throws IOException {
         String response = "Request Received";
         String method = httpExchange.getRequestMethod();
@@ -32,7 +28,7 @@ public class MyHandler implements HttpHandler{
             } else if (method.equals("PUT")){
                 response = this.handlePut(httpExchange);
             } else if (method.equals("DELETE")){
-                clearData();
+                response = this.handleDelete(httpExchange);
             } else {
                 throw new Exception ("Not Valid Request Method");
             }
@@ -47,6 +43,26 @@ public class MyHandler implements HttpHandler{
         OutputStream outStream = httpExchange.getResponseBody();
         outStream.write(response.getBytes());
         outStream.close();
+    }
+
+    public String handleDelete(HttpExchange httpExchange) throws IOException {
+        // CURRENTLY, I AM USING DELETE WHENEVR A PROMPT IS SELECTED,
+        // THIS WAY, COMMAND HANDLER KNOWS WHICH PROMPT TO DELETE
+        // WHEN DELETE PROMPT IS CALLED, HOWEVER, 
+        // QUERY IS NOT THE ENTIRE QUESTION LABEL, UNSURE HOW TO FIX THIS
+        // QUERY IS ONLY UNTIL THE FIRST SPACE
+
+
+        String response = "GET request";
+        URI uri = httpExchange.getRequestURI();
+        String query = uri.getRawQuery();
+        System.out.println("Query is: " + query);
+        if (query != null) {
+            String promptToDelete = query.substring(query.indexOf("=") + 1);
+            System.out.println("Prompt to Delete: " + promptToDelete);
+            commandHandler.setSelectedPrompt(promptToDelete);
+        }
+        return response;
     }
 
     public String handleGet(HttpExchange httpExchange) throws IOException {
