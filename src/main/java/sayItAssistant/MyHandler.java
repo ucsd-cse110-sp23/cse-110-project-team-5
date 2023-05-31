@@ -1,4 +1,4 @@
-
+package src.main.java.sayItAssistant;
 import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.*;

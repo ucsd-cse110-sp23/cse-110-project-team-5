@@ -1,4 +1,4 @@
-
+package src.main.java.sayItAssistant;
 import javax.sound.sampled.*;
 import java.lang.Exception;
 import java.io.File;

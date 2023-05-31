@@ -8,6 +8,7 @@
  * Footer - Contains Ask a question button
  * App frame - Brings together 3 aforementioned classes
  */
+package src.main.java.sayItAssistant;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
