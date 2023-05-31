@@ -25,7 +25,11 @@ dependencies {
     // compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
-    implementation 'org.mongodb:mongodb-driver-sync:4.9.1'
+    // https://mvnrepository.com/artifact/io.fares.junit.mongodb/mongodb-junit-test
+    implementation 'io.fares.junit.mongodb:mongodb-junit-test:1.0.1'
+
+
+    
 }
 
 sourceSets {

@@ -86,7 +86,7 @@ class CreateAccountPage extends JFrame {
                 // System.out.println(password);
                 // System.out.println(verifyPassword);
 
-                if (password.equals(verifyPassword)) {
+                if (checkAccountDetails(email, password, verifyPassword)) {
                     JOptionPane.showMessageDialog(CreateAccountPage.this, "Login successful!");
 
                     if (autoLogin.isSelected()) {
@@ -148,6 +148,17 @@ class CreateAccountPage extends JFrame {
             JOptionPane.showMessageDialog(null, "Error: No Connection to Server");
         } 
         return true;
+    }
+
+    public static boolean checkAccountDetails(String email, String password, String verifyPassword) {
+        boolean result = false;
+        if (password.equals(verifyPassword)) {
+            result = true;
+        }
+        if (email == null || password == null || verifyPassword == null) {
+            result = false;
+        }
+        return result;
     }
 }
 
