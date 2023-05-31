@@ -41,6 +41,7 @@ class CommandHandler {
   PromptFactory pf;
   AppFrame app;
   String email;
+  String selectedPrompt;
   //Database db;
   public final String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
 
@@ -52,8 +53,13 @@ class CommandHandler {
     this.email = e;
   }
 
+  void setSelectedPrompt(String prompt) {
+    selectedPrompt = prompt;
+    System.out.println("Prompt to delete set to: " + selectedPrompt);
+  }
+
   String HandlePrompt(String transcriptionFromWhisper) {
-    String response = "Invalid Command";
+    String response = "";
     transcriptionFromWhisper = transcriptionFromWhisper.trim();
     System.out.println(transcriptionFromWhisper);
     
@@ -67,7 +73,7 @@ class CommandHandler {
       
     }
     else if (transcriptionFromWhisper.toLowerCase().indexOf("delete prompt") == 0) {
-      response = this.deletePrompt(this.email, transcriptionFromWhisper);
+      response = this.deletePrompt(this.email, this.selectedPrompt);
       return response;
     }
     else if (transcriptionFromWhisper.toLowerCase().indexOf("clear all") == 0) {
@@ -75,7 +81,12 @@ class CommandHandler {
       return response;
     }
     else if (transcriptionFromWhisper.toLowerCase().indexOf("create email") == 0) {
-      this.createEmail();
+      try {
+        response = this.createEmail(this.email, transcriptionFromWhisper);
+        return response;
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
     else if (transcriptionFromWhisper.toLowerCase().indexOf("send email") == 0) {
       this.sendEmail();
@@ -84,6 +95,7 @@ class CommandHandler {
       this.setUpEmail();
     }
     else {
+      response = this.wrongCommand(this.email, transcriptionFromWhisper);
       return response;
     }
 
@@ -175,7 +187,7 @@ class CommandHandler {
     }
   }
 
-  String deletePrompt(String email, String transcriptionFromWhisper) {
+  String deletePrompt(String email, String selectedPrompt) {
     String response = "Delete Prompt Entered";
     try (MongoClient mongoClient = MongoClients.create(db_uri)) {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
@@ -189,7 +201,7 @@ class CommandHandler {
       // Create an update document to remove a specific prompt from the "prompts" array
       // Create an update document to remove a specific prompt based on the question field
       Document update = new Document("$pull", new Document("prompts",
-      new Document("question", transcriptionFromWhisper)));
+      new Document("question", selectedPrompt)));
       
       users.updateOne(filter, update);
       System.out.println("Prompt Deleted Successfully");
@@ -242,20 +254,69 @@ class CommandHandler {
     // create a new pop up window, handle all that stuff in its class
   }
 
-  void createEmail() {
-    //Email email = pf.createEmail(...);
-    //app.list.add(email)
-    //app.
+  String createEmail(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
+    String answer = ChatGPT.getAnswer(transcriptionFromWhisper);
+    // upsert this into the database, and pass back the entire user
+    try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+      MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+      MongoCollection<Document> users = sayItAssistant.getCollection("users");
+
+      // Create the filter
+      Document filter = new Document("email", email);
+
+      // Create an update document to push a new prompt into the existing "prompts" field
+      Document update = new Document("$push", new Document("prompts",
+      new Document("question", transcriptionFromWhisper)
+              .append("answer", answer)));
+
+      // Perform the update operation
+      users.updateOne(filter, update);
+
+      System.out.println("Prompt inserted successfully.");
+
+      String response = "";
+      Document doc = users.find(eq("email", email)).first();
+      if (doc != null) {
+          response = doc.toJson();
+      } else {
+          response = "No matching documents found.";
+      }
+      
+      System.out.println(response);
+      return response;
+    }
   }
 
-  void wrongCommand(String transcription) {
-    //InvalidCommand invalidCommand = pf.createInvalidCommand(transcriptionFromWhisper);
-    //app.list.add(invalidCommand);
-    // WrongPrompt wp = pf.createWrongPrompt(transcription);
-    // lst.addPrompt(wp);
-    // app.content.setText(wp.getContent());
-    // app.repaint();
-    // app.revalidate();
+  String wrongCommand(String email, String transcriptionFromWhisper) {
+    // upsert this into the database, and pass back the entire user
+    try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+      MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+      MongoCollection<Document> users = sayItAssistant.getCollection("users");
+
+      // Create the filter
+      Document filter = new Document("email", email);
+
+      // Create an update document to push a new prompt into the existing "prompts" field
+      Document update = new Document("$push", new Document("prompts",
+      new Document("question", transcriptionFromWhisper)
+              .append("answer", "Invalid Command: " + transcriptionFromWhisper)));
+
+      // Perform the update operation
+      users.updateOne(filter, update);
+
+      System.out.println("Prompt inserted successfully.");
+
+      String response = "";
+      Document doc = users.find(eq("email", email)).first();
+      if (doc != null) {
+          response = doc.toJson();
+      } else {
+          response = "No matching documents found.";
+      }
+      
+      System.out.println(response);
+      return response;
+    }
   }
 
 
