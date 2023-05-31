@@ -1,5 +1,5 @@
-package src.main.java.sayItAssistant;
-package com.journaldev.mail;
+// package src.main.java.sayItAssistant;
+// package com.journaldev.mail;
 
 //import java.util.*;
 

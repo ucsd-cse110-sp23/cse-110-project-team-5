@@ -28,6 +28,11 @@ dependencies {
     implementation 'org.mongodb:mongodb-driver-sync:4.9.1'
 
     implementation 'javax.mail:javax.mail-api:1.6.2'
+
+    implementation group: 'javax.mail', name: 'mail', version: '1.4.1'
+
+    implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+
 }
 
 sourceSets {
