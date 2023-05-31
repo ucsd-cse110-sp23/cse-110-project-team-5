@@ -42,8 +42,8 @@ public class TLSEmail {
             e.printStackTrace();
         }
         
-		final String fromEmail = setupInfo[5]; //requires valid gmail id
-		final String password = setupInfo[6]; // correct password for gmail id
+		final String fromEmail = "sups1237@gmail.com"; //requires valid gmail id
+		final String password = "dtomgkrzyaprkixs"; // correct password for gmail id
 		final String toEmail = "kec020@ucsd.edu"; // can be any email id 
 		
 		System.out.println("TLSEmail Start");
@@ -52,6 +52,9 @@ public class TLSEmail {
 		props.put("mail.smtp.port", "587"); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		
                 //create Authenticator object to pass in Session.getInstance argument
 		Authenticator auth = new Authenticator() {
