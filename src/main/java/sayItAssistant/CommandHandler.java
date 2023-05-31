@@ -59,7 +59,7 @@ class CommandHandler {
   }
 
   String HandlePrompt(String transcriptionFromWhisper) {
-    String response = "Invalid Command";
+    String response = "";
     transcriptionFromWhisper = transcriptionFromWhisper.trim();
     System.out.println(transcriptionFromWhisper);
     
