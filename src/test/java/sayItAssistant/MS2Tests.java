@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Date;
   
+import java.util.List;
+import java.util.ArrayList;
 // Following imports are necessary for JUNIT
 import static org.junit.Assert.assertEquals;
   
@@ -17,6 +19,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import org.bson.Document;
+
 
 public class MS2Tests {
   @Test
@@ -49,97 +53,50 @@ public class MS2Tests {
     assertFalse(result);
   }
 
-  // @Test
-  //   public void testInsertedAndUpdatedDocument() throws Exception {
+  @Test
+    public void testInsertedAndUpdatedDocument() throws Exception {
   
-  //       try {
+        try {
   
-  //           /**** Connect to MongoDB ****/
-  //           // Since 2.10.0, uses MongoClient
-  //           MongoClient mongo = new MongoClient("localhost", 27017);
+            /**** Connect to MongoDB ****/
+            // Since 2.10.0, uses MongoClient
+            MongoClient mongo = new MongoClient("localhost", 8100);
   
-  //           /**** Get database ****/
-  //           // if database doesn't exists, MongoDB will create it for you
-  //           DB db = mongo.getDB("geeksforgeeks");
+            /**** Get database ****/
+            // if database doesn't exists, MongoDB will create it for you
+            DB db = mongo.getDB("say_it_assistant");
   
-  //           /**** Get collection / table from 'geeksforgeeks' ****/
-  //           // if collection doesn't exists, MongoDB will create it for you
-  //           DBCollection table = db.getCollection("authors");
+            /**** Get collection / table from 'geeksforgeeks' ****/
+            // if collection doesn't exists, MongoDB will create it for you
+            DBCollection table = db.getCollection("users");
   
-  //           /**** Insert ****/
-  //           // create a document to store key and value
-  //           BasicDBObject document = new BasicDBObject();
-  //           document.put("name", "author1");
-  //           document.put("age", 30);
-  //           document.put("technology", "java,mongodb");
-  //           document.put("createdDate", new Date());
-  //           table.insert(document);
+            /**** Insert ****/
+            // create a document to store key and value
+            BasicDBObject document = new BasicDBObject();
+            document.put("email", "Suprith1");
+            document.put("password", "123Password");
+            document.put("prompts", new ArrayList<String>());
+            table.insert(document);
   
-  //           /**** Find and display ****/
-  //           BasicDBObject searchQuery = new BasicDBObject();
-  //           searchQuery.put("name", "author1");
+            /**** Find and display ****/
+            BasicDBObject searchQuery = new BasicDBObject();
+            searchQuery.put("email", "Suprith1");
               
-  //           DBCursor cursor = table.find(searchQuery);
-  //           // While displaying let us check 
-  //             // with assert statements as well
-  //           while (cursor.hasNext()) {
-  //               DBObject object = cursor.next();
-  //               // Checking whether inserted name is author1
-  //               assertEquals("author1", object.get("name").toString());
-  //               // Checking whether inserted age is 30
-  //               assertEquals(30, Integer.parseInt(object.get("age").toString()));
-  //               // Checking whether inserted technology is java,mongodb
-  //               assertEquals("java,mongodb", object.get("technology").toString());
-                  
-                  
-  //           }
-              
-  //           /**** Update ****/
-  //           // search document where name="author1" 
-  //             // and update it with new values
-  //           BasicDBObject query = new BasicDBObject();
-  //           query.put("name", "author1");
+            DBCursor cursor = table.find(searchQuery);
+            // While displaying let us check 
+              // with assert statements as well
+            while (cursor.hasNext()) {
+                DBObject object = cursor.next();
+                // Checking whether inserted name is Suprith1
+                assertEquals("Suprith1", object.get("email").toString());
+                // Checking whether inserted age is 123Password
+                assertEquals("123Password", object.get("password").toString());
+            }       
+        } catch (MongoException e) {
+            e.printStackTrace();
+        }
   
-  //           BasicDBObject newDocument = new BasicDBObject();
-  //           // changing the technology column value
-  //           newDocument.put("technology", "java,.net,mongodb");
-  //           // additionally adding a new column. 
-  //             // This is the advantage of mongodb. 
-  //           // We no need to have concrete structure 
-  //             // from the beginning as like RDBMS database
-  //           newDocument.put("numberofposts", "10");
-  
-  //           BasicDBObject updateObj = new BasicDBObject();
-  //           updateObj.put("$set", newDocument);
-              
-  //             // This way we can update the document
-  //           table.update(query, updateObj);
-  
-  //           /**** Find and display ****/
-  //           BasicDBObject searchQuery2 
-  //               = new BasicDBObject().append("name", "author1");
-  
-  //           DBCursor cursor2 = table.find(searchQuery2);
-  //           // Check the same as well
-  //           // Now we can check whether the technology
-  //             // got changed to java,.net,mongodb
-  //           // and also numberofposts to 10
-  //           while (cursor2.hasNext()) {
-  //               DBObject object = cursor2.next();
-  //               assertEquals("author1", object.get("name").toString());
-  //               assertEquals(30, Integer.parseInt(object.get("age").toString()));
-  //               assertEquals("java,.net,mongodb", object.get("technology").toString());
-  //               assertEquals("10", object.get("numberofposts").toString());
-  //           }
-  
-              
-  //       } catch (UnknownHostException e) {
-  //           e.printStackTrace();
-  //       } catch (MongoException e) {
-  //           e.printStackTrace();
-  //       }
-  
-  //   }
+    }
 
 
 }
