@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Date;
   
-import java.util.List;
+// import java.util.List;
 import java.util.ArrayList;
 // Following imports are necessary for JUNIT
 import static org.junit.Assert.assertEquals;
@@ -23,6 +23,37 @@ import org.bson.Document;
 
 
 public class MS2Tests {
+
+  @Test
+  void TestCheckAccountDetails() {
+    String email = "someemail@gmail.com";
+    String password = "12345";
+    String vPassword = "4321";
+
+    boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
+    assertFalse(result);
+  }
+  
+  @Test
+    public void TestGetSelected() {
+
+      List promptHistory = new List();
+
+      Prompt chosen = new Prompt();
+      chosen.label.setText("selected prompt");
+      chosen.selected = true;
+      promptHistory.add(chosen);
+
+      for (int i = 0; i < 4; i++) {
+        Prompt p = new Prompt();
+        promptHistory.add(p);
+      }
+
+      assertEquals("selected prompt", promptHistory.findSelected().label.getText());
+
+    }
+
+
   @Test
   void US1Scenario1() {
     String email = "someemail@gmail.com";
@@ -31,16 +62,6 @@ public class MS2Tests {
 
     boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
     assertTrue(result);
-  }
-
-  @Test
-  void US1Scenario2() {
-    String email = "someemail@gmail.com";
-    String password = "12345";
-    String vPassword = "4321";
-
-    boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
-    assertFalse(result);
   }
 
   @Test
