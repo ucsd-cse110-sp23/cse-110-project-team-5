@@ -54,7 +54,7 @@ public class MS2Tests {
   }
 
   @Test
-    public void testInsertedAndUpdatedDocument() throws Exception {
+    public void US2Scenario1() throws Exception {
   
         try {
   
@@ -91,6 +91,56 @@ public class MS2Tests {
                 assertEquals("Suprith1", object.get("email").toString());
                 // Checking whether inserted age is 123Password
                 assertEquals("123Password", object.get("password").toString());
+            }       
+        } catch (MongoException e) {
+            e.printStackTrace();
+        }
+  
+    }
+
+
+
+    @Test
+    public void US4Scenario2() throws Exception {
+  
+        try {
+  
+            /**** Connect to MongoDB ****/
+            // Since 2.10.0, uses MongoClient
+            MongoClient mongo = new MongoClient("localhost", 8100);
+  
+            /**** Get database ****/
+            // if database doesn't exists, MongoDB will create it for you
+            DB db = mongo.getDB("say_it_assistant");
+  
+            /**** Get collection / table from 'geeksforgeeks' ****/
+            // if collection doesn't exists, MongoDB will create it for you
+            DBCollection table = db.getCollection("users");
+  
+            ArrayList<String> prompts = new ArrayList<>();
+            prompts.add("How did the chicken cross the road?");
+            /**** Insert ****/
+            // create a document to store key and value
+            BasicDBObject document = new BasicDBObject();
+            document.put("email", "Suprith1");
+            document.put("password", "123Password");
+            document.put("prompts", prompts);
+            table.insert(document);
+  
+            /**** Find and display ****/
+            BasicDBObject searchQuery = new BasicDBObject();
+            searchQuery.put("email", "Suprith1");
+              
+            DBCursor cursor = table.find(searchQuery);
+            // While displaying let us check 
+              // with assert statements as well
+            while (cursor.hasNext()) {
+                DBObject object = cursor.next();
+                // Checking whether inserted name is Suprith1
+                assertEquals("Suprith1", object.get("email").toString());
+                // Checking whether inserted age is 123Password
+                assertEquals("123Password", object.get("password").toString());
+                assertEquals("How did the chicken cross the road?", object.get("prompts").toString());
             }       
         } catch (MongoException e) {
             e.printStackTrace();
