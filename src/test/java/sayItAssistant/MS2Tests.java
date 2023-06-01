@@ -33,6 +33,16 @@ public class MS2Tests {
     boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
     assertFalse(result);
   }
+
+  @Test
+  void TestNullAccountDetails() {
+    String email = null;
+    String password = "1234";
+    String vPassword = "1234";
+
+    boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
+    assertFalse(result);
+  }
   
   @Test
     public void TestGetSelected() {
@@ -62,16 +72,6 @@ public class MS2Tests {
 
     boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
     assertTrue(result);
-  }
-
-  @Test
-  void US1Scenario3() {
-    String email = null;
-    String password = "1234";
-    String vPassword = "1234";
-
-    boolean result = CreateAccountPage.checkAccountDetails(email, password, vPassword);
-    assertFalse(result);
   }
 
   @Test
