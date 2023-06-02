@@ -110,7 +110,6 @@ class CreateAccountPage extends JFrame {
 
                     // This creates account on database and gives commandhandler on server this users email
                     createAccount(email, password);
-                    AppFrame frame = new AppFrame();
 
                     
                 } else {
@@ -128,26 +127,26 @@ class CreateAccountPage extends JFrame {
     }
 
     public boolean createAccount(String email, String password) {
+        boolean result = false;
+        String query = "false~" + email + "~" + password;
         try {
-            URL url = new URL(URL);
+            URL url = new URL(URL + "?=" + query);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("PUT");
-            conn.setDoOutput(true);
-            OutputStreamWriter out = new OutputStreamWriter(
-              conn.getOutputStream()
-            );
-            out.write(email + "~" + password);
-            out.flush();
-            out.close();
+            conn.setRequestMethod("GET");
 
             BufferedReader response = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String emailPassword = response.readLine();
-            System.out.println("In StartupPage, email + password: " + emailPassword);
+            String jsonString = response.readLine();
+            System.out.println("From Create Account: " + jsonString);
+
+            // Since we are creating account, we will always succeed
+            AppFrame app = new AppFrame();
+            app.list.update(jsonString);
+            result = true;
           } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error: No Connection to Server");
         } 
-        return true;
+        return result;
     }
 
     public static boolean checkAccountDetails(String email, String password, String verifyPassword) {
@@ -256,7 +255,7 @@ class LoginPage extends JFrame {
 
     public boolean logIn(String email, String password) {
         boolean result = false;
-        String query = email + "~" + password;
+        String query = "true~" + email + "~" + password;
         try {
             URL url = new URL(URL + "?=" + query);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
