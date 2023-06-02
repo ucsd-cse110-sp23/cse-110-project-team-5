@@ -147,7 +147,7 @@ class CommandHandler {
 
       // Find account and returns its json as a string
       Document doc = users.find(eq("email", email)).first();
-      if (doc != null) {
+      if (doc != null && doc.getString("password").equals(password)) {
           response = doc.toJson();
       } else {
           response = "No matching documents found.";

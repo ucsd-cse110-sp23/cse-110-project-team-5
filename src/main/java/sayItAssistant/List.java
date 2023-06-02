@@ -67,6 +67,10 @@ class List extends JPanel {
         // Create the JPanels
         Prompt p = pf.createPrompt(question, answer);
         addPrompt(p);
+
+        if (i == promptsArray.length() - 1) {
+          AppFrame.content.setText(answer);
+        }
     }
   }
 
