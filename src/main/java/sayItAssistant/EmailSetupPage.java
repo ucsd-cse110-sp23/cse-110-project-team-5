@@ -11,8 +11,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import static com.mongodb.client.model.Filters.eq;
+
+import com.mongodb.client.model.UpdateOptions;
+import org.bson.json.JsonWriterSettings;
 
 class EmailSetupPage extends JFrame {
+    String emailOfUser;
     private JTextField firstNameField;
     private JTextField lastNameField;
     private JTextField displayNameField;
@@ -25,11 +35,14 @@ class EmailSetupPage extends JFrame {
     Color darkGrey = new Color (50,50,50);
     Color foregroundColor = new Color(200, 200, 200);
     Color lightGrey = new Color(100, 100, 100);
+    public final String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
 
-    public EmailSetupPage() {
+    public EmailSetupPage(String email) {
         super("Email Setup Page");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setPreferredSize(new Dimension(800, 600));
+
+        this.emailOfUser = email;
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 10, 10));
@@ -111,34 +124,17 @@ class EmailSetupPage extends JFrame {
                 String displayName = displayNameField.getText();
                 String smtp = smtpField.getText();
                 String tls = tlsField.getText();
-                String email = emailField.getText();
-                String password = new String(passwordField.getPassword());
+                String emailEmail = emailField.getText();
+                String emailPassword = new String(passwordField.getPassword());
 
-                try (FileOutputStream fos = new FileOutputStream("src/main/java/sayItAssistant/EmailSetupInfo.txt")) {
-                    // Clear the file by writing an empty byte array
-                    fos.write(new byte[0]);
-                    System.out.println("File contents cleared successfully.");
-                } catch (IOException ex) {
-                    System.out.println("An error occurred while clearing the file: " + ex.getMessage());
+                boolean successful = uploadEmailDetails(email, firstName, lastName, displayName, smtp, tls, emailEmail, emailPassword);
+                if (successful) {
+                    JOptionPane.showMessageDialog(EmailSetupPage.this, "Email Information Saved!");
                 }
-
-                System.out.println(email);
-                System.out.println(password);
+                else {
+                    JOptionPane.showMessageDialog(EmailSetupPage.this, "Email Information Not Saved.");
+                }
                 
-                JOptionPane.showMessageDialog(EmailSetupPage.this, "Email Information Saved!");
-
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/sayItAssistant/EmailSetupInfo.txt"))) {
-                writer.write(firstName + "\n");
-                writer.write(lastName + "\n");
-                writer.write(displayName + "\n");
-                writer.write(smtp + "\n");
-                writer.write(tls + "\n");
-                writer.write(email + "\n");
-                writer.write(password + "\n");
-                writer.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
              }
         });
 
@@ -161,10 +157,54 @@ class EmailSetupPage extends JFrame {
         setVisible(true);
     }
 
+    Boolean uploadEmailDetails(String email, String firstName, String lastName, String displayName,
+        String smtp, String tls, String emailEmail, String emailPassword) {
+        try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+            MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+            MongoCollection<Document> users = sayItAssistant.getCollection("users");
+      
+      
+            // Create the filter
+            Document filter = new Document("email", email);
+      
+            // Create the update for password
+            Document update = new Document("$set", new Document("firstName", firstName));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            update = new Document("$set", new Document("lastName", lastName));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            update = new Document("$set", new Document("displayName", displayName));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            update = new Document("$set", new Document("smtp", smtp));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            update = new Document("$set", new Document("tls", tls));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            update = new Document("$set", new Document("emailEmail", emailEmail));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            update = new Document("$set", new Document("emailPassword", emailPassword));
+            users.updateOne(filter, update, new UpdateOptions().upsert(true));
+
+            String response = "";
+            Document doc = users.find(eq("email", email)).first();
+            if (doc != null) {
+                response = doc.toJson();
+                return true;
+            } else {
+                response = "No matching documents found.";
+                return false;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new EmailSetupPage();
+                new EmailSetupPage("");
             }
         });
     }

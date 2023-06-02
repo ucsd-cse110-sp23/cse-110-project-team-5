@@ -56,6 +56,9 @@ class List extends JPanel {
     // Access the "prompts" array
     JSONArray promptsArray = jsonObject.getJSONArray("prompts");
 
+    if (promptsArray.length() == 0) {
+      AppFrame.content.setText("");
+    }
     // Iterate through the prompts array
     for (int i = 0; i < promptsArray.length(); i++) {
         JSONObject prompt = promptsArray.getJSONObject(i);
@@ -72,6 +75,12 @@ class List extends JPanel {
           AppFrame.content.setText(answer);
         }
     }
+
+    numPrompts += 0;
+    setPreferredSize(new Dimension(400, 105 * this.numPrompts));
+    repaint();
+    revalidate();
+    updateNumbers();
   }
 
   public Prompt findSelected() {
