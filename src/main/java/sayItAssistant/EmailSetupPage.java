@@ -139,7 +139,6 @@ class EmailSetupPage extends JFrame {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                AppFrame frame = new AppFrame();
              }
         });
 

@@ -23,7 +23,7 @@ public class TLSEmail {
 	   Use Authentication: Yes
 	   Port for TLS/STARTTLS: 587
 	 */
-	public static void main(String[] args) {
+	public String send() {
 
         File setup = new File("src/main/java/sayItAssistant/EmailSetupInfo.txt");
         String setupInfo[] = new String[7];
@@ -43,8 +43,8 @@ public class TLSEmail {
         }
         
 		final String fromEmail = "sups1237@gmail.com"; //requires valid gmail id
-		final String password = "dtomgkrzyaprkixs"; // correct password for gmail id
-		final String toEmail = "kec020@ucsd.edu"; // can be any email id 
+		final String password = "ljkldeuetmesjlql"; // correct password for gmail id
+		final String toEmail = "xicoreyes513@gmail.com"; // can be any email id 
 		
 		System.out.println("TLSEmail Start");
 		Properties props = new Properties();
@@ -65,9 +65,8 @@ public class TLSEmail {
 		};
 		Session session = Session.getInstance(props, auth);
 		
-		EmailUtil.sendEmail(session, toEmail,"TLSEmail Testing Subject", "TLSEmail Testing Body");
+		return EmailUtil.sendEmail(session, toEmail,"TLSEmail Testing Subject", "TLSEmail Testing Body");
 		
 	}
-
 	
 }

@@ -29,7 +29,7 @@ public class EmailUtil {
 	 * @param subject
 	 * @param body
 	 */
-	public static void sendEmail(Session session, String toEmail, String subject, String body){
+	public static String sendEmail(Session session, String toEmail, String subject, String body){
 		try
 	    {
 	      MimeMessage msg = new MimeMessage(session);
@@ -52,10 +52,11 @@ public class EmailUtil {
 	      System.out.println("Message is ready");
     	  Transport.send(msg);
 
-	      System.out.println("EMail Sent Successfully!!");
+	      return "Email Sent Successfully!!";
 	    }
 	    catch (Exception e) {
 	      e.printStackTrace();
+		  return "Email error";
 	    }
 	}
 }

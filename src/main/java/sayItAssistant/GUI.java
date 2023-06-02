@@ -260,6 +260,7 @@ class AppFrame extends JFrame {
                 in.close();
 
                 String jsonString = response.toString();
+                System.out.println("Json String is: " + jsonString);
                 list.update(jsonString);
 
             } else {
