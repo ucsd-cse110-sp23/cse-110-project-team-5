@@ -1,3 +1,4 @@
+// package src.main.java.sayItAssistant;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -138,7 +139,6 @@ class EmailSetupPage extends JFrame {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                AppFrame frame = new AppFrame();
              }
         });
 

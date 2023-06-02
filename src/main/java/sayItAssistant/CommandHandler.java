@@ -1,4 +1,4 @@
-
+// package src.main.java.sayItAssistant;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -89,10 +89,14 @@ class CommandHandler {
       }
     }
     else if (transcriptionFromWhisper.toLowerCase().indexOf("send email") == 0) {
-      this.sendEmail();
+      response = this.sendEmail(transcriptionFromWhisper);
+      return response;
     }
-    else if (transcriptionFromWhisper.toLowerCase().indexOf("set up email") == 0) {
-      this.setUpEmail();
+    else if (transcriptionFromWhisper.toLowerCase().indexOf("setup email") == 0 || 
+                transcriptionFromWhisper.toLowerCase().indexOf("set up email") == 0) {
+      response = this.setUpEmail(transcriptionFromWhisper);
+      return response;
+      
     }
     else {
       response = this.wrongCommand(this.email, transcriptionFromWhisper);
@@ -245,13 +249,77 @@ class CommandHandler {
     return response;
   }
 
-  void sendEmail() {
-    // Check if everything is correct
-    // if so send, else, show error
+  String sendEmail(String transcription) {
+    TLSEmail tls = new TLSEmail();
+    String status = tls.send();
+
+    String response;
+
+    // create a new pop up window, handle all that stuff in its class
+    try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+      MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+      MongoCollection<Document> users = sayItAssistant.getCollection("users");
+
+      // Create the filter
+      Document filter = new Document("email", email);
+
+
+      // Create an update document to push a new prompt into the existing "prompts" field
+      Document update = new Document("$push", new Document("prompts",
+      new Document("question", transcription)
+              .append("answer", status)));
+
+      // Perform the update operation
+      users.updateOne(filter, update);
+
+
+      response = "";
+      Document doc = users.find(eq("email", email)).first();
+      if (doc != null) {
+          response = doc.toJson();
+      } else {
+          response = "No matching documents found.";
+      }
+      
+      System.out.println(response);
+    }
+    return response;
+
   }
   
-  void setUpEmail() {
+  String setUpEmail(String transcription) {
+    String response;
     // create a new pop up window, handle all that stuff in its class
+    EmailSetupPage page = new EmailSetupPage();
+    page.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+      MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+      MongoCollection<Document> users = sayItAssistant.getCollection("users");
+
+      // Create the filter
+      Document filter = new Document("email", email);
+
+
+      // Create an update document to push a new prompt into the existing "prompts" field
+      Document update = new Document("$push", new Document("prompts",
+      new Document("question", transcription)
+              .append("answer", "")));
+
+      // Perform the update operation
+      users.updateOne(filter, update);
+
+
+      response = "";
+      Document doc = users.find(eq("email", email)).first();
+      if (doc != null) {
+          response = doc.toJson();
+      } else {
+          response = "No matching documents found.";
+      }
+      
+      System.out.println(response);
+      return response;
+    }
   }
 
   String createEmail(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
