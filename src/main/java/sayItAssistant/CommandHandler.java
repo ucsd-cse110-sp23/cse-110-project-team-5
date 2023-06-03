@@ -59,6 +59,7 @@ class CommandHandler {
     }
   }
 
+  /* Creates a question using whisper transcription and adds to list */
   void question(String transcriptionFromWhisper) {
     Question question = pf.createQuestion(transcriptionFromWhisper);
     lst.addPrompt(question);
