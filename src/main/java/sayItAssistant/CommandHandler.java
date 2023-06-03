@@ -290,7 +290,7 @@ class CommandHandler {
   String setUpEmail(String transcription) {
     String response;
     // create a new pop up window, handle all that stuff in its class
-    EmailSetupPage page = new EmailSetupPage();
+    EmailSetupPage page = new EmailSetupPage(this.email);
     page.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     try (MongoClient mongoClient = MongoClients.create(db_uri)) {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
