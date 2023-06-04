@@ -322,6 +322,7 @@ class CommandHandler {
     }
   }
 
+    /* create user email using whisper transcription */
   String createEmail(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
     String answer = ChatGPT.getAnswer(transcriptionFromWhisper);
     // upsert this into the database, and pass back the entire user
@@ -344,6 +345,7 @@ class CommandHandler {
 
       String response = "";
       Document doc = users.find(eq("email", email)).first();
+      // Create response based on matching user email
       if (doc != null) {
           response = doc.toJson();
       } else {
