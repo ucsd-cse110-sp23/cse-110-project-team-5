@@ -46,20 +46,14 @@ public class MyHandler implements HttpHandler{
     }
 
     public String handleDelete(HttpExchange httpExchange) throws IOException {
-        // CURRENTLY, I AM USING DELETE WHENEVR A PROMPT IS SELECTED,
-        // THIS WAY, COMMAND HANDLER KNOWS WHICH PROMPT TO DELETE
-        // WHEN DELETE PROMPT IS CALLED, HOWEVER, 
-        // QUERY IS NOT THE ENTIRE QUESTION LABEL, UNSURE HOW TO FIX THIS
-        // QUERY IS ONLY UNTIL THE FIRST SPACE
-
-
-        String response = "GET request";
+        String response = "Invalid DELETE request";
         URI uri = httpExchange.getRequestURI();
         String query = uri.getRawQuery();
-        System.out.println("Query is: " + query);
         if (query != null) {
-            String promptToDelete = query.substring(query.indexOf("=") + 1);
-            System.out.println("Prompt to Delete: " + promptToDelete);
+            //decode the query
+            String decodedQuery = URLDecoder.decode(query, "UTF-8");
+            String promptToDelete = decodedQuery.split("PromptLabel=")[1];
+            //set selectedPrompt to the prompt that will be deleted
             commandHandler.setSelectedPrompt(promptToDelete);
         }
         return response;

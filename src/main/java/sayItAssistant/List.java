@@ -138,44 +138,26 @@ class List extends JPanel {
         p.label.revalidate();
         repaint();
         revalidate();
+        //set up for delete prompt by setting selectedPrompt in commandHandler
+        try {
+          String encodedValue = URLEncoder.encode(selectedPrompt.getLabel(), "UTF-8");
+          String queryString = "PromptLabel=" + encodedValue;
+          URL url = new URL(URL + "?" + queryString);
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          conn.setRequestMethod("DELETE");
+          System.out.println("WE got here: " + URL + "?" + queryString);
+          BufferedReader in = new BufferedReader(
+            new InputStreamReader(conn.getInputStream())
+          );
+          String response = in.readLine();
+          in.close();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
       }
     };      
     p.addMouseListener(ma);
     p.label.addMouseListener(ma);    
-    // Add selected listener to question
-    // p.addMouseListener(
-    //   new MouseAdapter() {
-    //     @override
-    //     public void mousePressed(MouseEvent e) {
-    //       
-    //       p.selected = true;
-    //       selectedPrompt = p;
-
-    //       try {
-    //         String query = p.label.getText();
-    //         URL url = new URL(URL + "?=" + query);
-    //         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    //         conn.setRequestMethod("DELETE");
-
-
-    //         BufferedReader in = new BufferedReader(
-    //           new InputStreamReader(conn.getInputStream())
-    //         );
-    //         String response = in.readLine();
-    //         in.close();
-    //       } catch (Exception ex) {
-    //         ex.printStackTrace();
-    //       }
-    //       p.setBackground(new Color(188, 226, 158));
-    //       if(p.isInvalidCommand()) {
-    //         AppFrame.content.setText(p.getContent());
-    //       }
-    //       else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
-    //       repaint();
-    //       revalidate();
-    //     }
-    //   }
-    // );
     numPrompts += 1;
     setPreferredSize(new Dimension(400, 105 * this.numPrompts));
     repaint();
