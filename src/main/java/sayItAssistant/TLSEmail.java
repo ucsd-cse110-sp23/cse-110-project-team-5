@@ -1,3 +1,7 @@
+/**
+ * This code was modified from the original code found at:
+ * https://www.digitalocean.com/community/tutorials/javamail-example-send-mail-in-java-smtp given to us by Lab7
+ */
 
 //package com.journaldev.mail;
 
