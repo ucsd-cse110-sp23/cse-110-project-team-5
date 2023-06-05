@@ -79,6 +79,7 @@ class List extends JPanel {
             AppFrame.content.setText(p.getContent());
           }
           else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
+          selectPrompt(p);
         }
     }
 
@@ -87,6 +88,39 @@ class List extends JPanel {
     repaint();
     revalidate();
     updateNumbers();
+  }
+
+  public void selectPrompt(Prompt p) {
+    this.selectedPrompt = p;
+    deselectAll();
+    p.selected = true;
+    selectedPrompt = p;
+    p.label.setBackground(green);
+    p.setBackground(green);
+    if(p.isInvalidCommand()) {
+      AppFrame.content.setText(p.getContent());
+    }
+    else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
+    p.label.repaint();
+    p.label.revalidate();
+    repaint();
+    revalidate();
+    //set up for delete prompt by setting selectedPrompt in commandHandler
+    try {
+      String encodedValue = URLEncoder.encode(selectedPrompt.getLabel(), "UTF-8");
+      String queryString = "PromptLabel=" + encodedValue;
+      URL url = new URL(URL + "?" + queryString);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("DELETE");
+      System.out.println("WE got here: " + URL + "?" + queryString);
+      BufferedReader in = new BufferedReader(
+        new InputStreamReader(conn.getInputStream())
+      );
+      String response = in.readLine();
+      in.close();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   public Prompt findSelected() {
@@ -125,35 +159,7 @@ class List extends JPanel {
     MouseAdapter ma = new MouseAdapter() {
       @override
       public void mousePressed(MouseEvent e) {
-        deselectAll();
-        p.selected = true;
-        selectedPrompt = p;
-        p.label.setBackground(green);
-        p.setBackground(green);
-        if(p.isInvalidCommand()) {
-          AppFrame.content.setText(p.getContent());
-        }
-        else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
-        p.label.repaint();
-        p.label.revalidate();
-        repaint();
-        revalidate();
-        //set up for delete prompt by setting selectedPrompt in commandHandler
-        try {
-          String encodedValue = URLEncoder.encode(selectedPrompt.getLabel(), "UTF-8");
-          String queryString = "PromptLabel=" + encodedValue;
-          URL url = new URL(URL + "?" + queryString);
-          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-          conn.setRequestMethod("DELETE");
-          System.out.println("WE got here: " + URL + "?" + queryString);
-          BufferedReader in = new BufferedReader(
-            new InputStreamReader(conn.getInputStream())
-          );
-          String response = in.readLine();
-          in.close();
-        } catch (Exception ex) {
-          ex.printStackTrace();
-        }
+        selectPrompt(p);
       }
     };      
     p.addMouseListener(ma);
@@ -169,7 +175,7 @@ class List extends JPanel {
     //delete from GUI
     findSelected();
     if (selectedPrompt == null) {
-      System.out.println("selectPrompt is null");
+      System.out.println("selectedPrompt is null");
       return -1;
     }
     int index = this.selectedPrompt.getIndex();

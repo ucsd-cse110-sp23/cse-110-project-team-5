@@ -26,12 +26,16 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import static com.mongodb.client.model.Filters.eq;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.json.JsonWriterSettings;
 import org.json.JSONObject;
 
 import java.util.Random;
-
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 import static java.util.Arrays.asList;
 
@@ -123,14 +127,20 @@ class CommandHandler {
       // Create the filter
       Document filter = new Document("email", email);
 
-      // Create the update for password
-      Document update = new Document("$set", new Document("password", password));
+      // Create all the account fields
+      Document update = new Document("$set", new Document()
+      .append("password", password)
+      .append("prompts", asList())
+      .append("firstName", "")
+      .append("lastName", "")
+      .append("displayName", "")
+      .append("smtp", "")
+      .append("tls", "")
+      .append("emailEmail", "")
+      .append("emailPassword", "")
+      );
 
       // Perform the upsert operation
-      users.updateOne(filter, update, new UpdateOptions().upsert(true));
-
-      // Create the update for prompts (empty)
-      update = new Document("$set", new Document("prompts", asList()));
       users.updateOne(filter, update, new UpdateOptions().upsert(true));
 
       String response = "";
@@ -272,9 +282,11 @@ class CommandHandler {
   }
 
   String sendEmail(String transcription) {
+    //usable transcription uses "@" instead of "at"
+    String usableTranscription = transcription.replace(" at ", "@");
+    if (usableTranscription.endsWith("."))
+      usableTranscription = usableTranscription.substring(0, usableTranscription.length() - 1);
     TLSEmail tls = new TLSEmail();
-    String status = tls.send();
-
     String response;
 
     // create a new pop up window, handle all that stuff in its class
@@ -282,21 +294,72 @@ class CommandHandler {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
       MongoCollection<Document> users = sayItAssistant.getCollection("users");
 
+      Document doc = users.find(eq("email", email)).first();
+
+      if(selectedPrompt != null && (selectedPrompt.toLowerCase().startsWith("create email"))) {
+
+      //get email set up from database
+      String jsonString = doc.toJson().toString();
+      JSONObject jsonObject = new JSONObject(jsonString);
+      String fromEmail = jsonObject.getString("emailEmail");
+      String displayName = jsonObject.getString("displayName");
+      String password = jsonObject.getString("emailPassword");
+      String smtpHost = jsonObject.getString("smtp");
+      String tlsPort = jsonObject.getString("tls");
+      String[] words = usableTranscription.split(" ");
+      //identify email in transcription using @
+      String toEmail = null;
+      for(int i = 0; i < words.length; i++) {
+        if(words[i].contains("@")) toEmail = words[i];
+      }
+
+      // Access created email from the "prompts" array
+      JSONArray promptsArray = jsonObject.getJSONArray("prompts");
+      JSONObject matchedPrompt = null;
+      for (int i = 0; i < promptsArray.length(); i++) {
+        JSONObject prompt = promptsArray.getJSONObject(i);
+        if(prompt.getString("question").equals(selectedPrompt)) 
+             matchedPrompt = prompt;
+      }
+  
+      //get subject and body
+      String subject = matchedPrompt.getString("question");
+      subject = subject.substring(subject.indexOf(subject.split(" ")[2]) + 1);
+      String body = matchedPrompt.getString("answer");
+      
+      //set email config and send
+      tls.setEmailConfig(fromEmail, toEmail, displayName, password, smtpHost, tlsPort,
+      subject, body);
+      System.out.println(toEmail);
+      String status = tls.send();
+
       // Create the filter
       Document filter = new Document("email", email);
 
-
       // Create an update document to push a new prompt into the existing "prompts" field
       Document update = new Document("$push", new Document("prompts",
-      new Document("question", transcription)
+      new Document("question", usableTranscription)
               .append("answer", status)));
 
       // Perform the update operation
       users.updateOne(filter, update);
 
+      } else {
+        // Create the filter
+        Document filter = new Document("email", email);
+
+        // Create an update document to push a new prompt into the existing "prompts" field
+        Document update = new Document("$push", new Document("prompts",
+        new Document("question", usableTranscription)
+                .append("answer", "That doesn't work, you need to select a create email prompt")));
+
+        // Perform the update operation
+        users.updateOne(filter, update);
+      }
+
+      doc = users.find(eq("email", email)).first();
 
       response = "";
-      Document doc = users.find(eq("email", email)).first();
       if (doc != null) {
           response = doc.toJson();
       } else {
@@ -304,9 +367,8 @@ class CommandHandler {
       }
       
       System.out.println(response);
-    }
+      }
     return response;
-
   }
   
   String setUpEmail(String transcription) {
@@ -353,13 +415,14 @@ class CommandHandler {
 
       Document doc = users.find(eq("email", email)).first();
 
-      // Create the filter
-      Document filter = new Document("email", email);
       String jsonString = doc.toJson().toString();
       JSONObject jsonObject = new JSONObject(jsonString);
       String displayName = jsonObject.getString("displayName");
       String display = "with the signature: \"Best Regards, \n" + displayName + "\"";
       String answer = ChatGPT.getAnswer(transcriptionFromWhisper + display);
+
+      // Create the filter
+      Document filter = new Document("email", email);
 
       // Create an update document to push a new prompt into the existing "prompts" field
       Document update = new Document("$push", new Document("prompts",
@@ -372,6 +435,7 @@ class CommandHandler {
       System.out.println("Prompt inserted successfully.");
 
       String response = "";
+      doc = users.find(eq("email", email)).first();
       
       // Create response based on matching user email
       if (doc != null) {
