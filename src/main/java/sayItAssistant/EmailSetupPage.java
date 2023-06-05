@@ -43,7 +43,7 @@ class EmailSetupPage extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setPreferredSize(new Dimension(800, 600));
 
-        this.emailOfUser = email;
+        this.emailOfUser = email; // = email;
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 10, 10));
@@ -62,7 +62,7 @@ class EmailSetupPage extends JFrame {
             MongoCollection<Document> users = sayItAssistant.getCollection("users");
       
       
-            Document doc = users.find(eq("email", email)).first();
+            Document doc = users.find(eq("email", emailOfUser)).first();
       
             String jsonString = doc.toJson().toString();
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -139,7 +139,7 @@ class EmailSetupPage extends JFrame {
                 String emailEmail = emailField.getText();
                 String emailPassword = new String(passwordField.getPassword());
 
-                boolean successful = uploadEmailDetails(email, firstName, lastName, displayName, smtp, tls, emailEmail, emailPassword);
+                boolean successful = uploadEmailDetails(firstName, lastName, displayName, smtp, tls, emailEmail, emailPassword);
                 if (successful) {
                     JOptionPane.showMessageDialog(EmailSetupPage.this, "Email Information Saved!");
                 }
@@ -169,7 +169,7 @@ class EmailSetupPage extends JFrame {
         setVisible(true);
     }
 
-    Boolean uploadEmailDetails(String email, String firstName, String lastName, String displayName,
+    Boolean uploadEmailDetails(String firstName, String lastName, String displayName,
         String smtp, String tls, String emailEmail, String emailPassword) {
         try (MongoClient mongoClient = MongoClients.create(db_uri)) {
             MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
@@ -177,7 +177,7 @@ class EmailSetupPage extends JFrame {
       
       
             // Create the filter
-            Document filter = new Document("email", email);
+            Document filter = new Document("email", emailOfUser);
       
             // Create the update for password
             Document update = new Document("$set", new Document("firstName", firstName));
@@ -202,7 +202,7 @@ class EmailSetupPage extends JFrame {
             users.updateOne(filter, update, new UpdateOptions().upsert(true));
 
             String response = "";
-            Document doc = users.find(eq("email", email)).first();
+            Document doc = users.find(eq("email", emailOfUser)).first();
             if (doc != null) {
                 response = doc.toJson();
                 return true;

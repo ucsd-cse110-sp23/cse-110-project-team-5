@@ -127,14 +127,20 @@ class CommandHandler {
       // Create the filter
       Document filter = new Document("email", email);
 
-      // Create the update for password
-      Document update = new Document("$set", new Document("password", password));
+      // Create all the account fields
+      Document update = new Document("$set", new Document()
+      .append("password", password)
+      .append("prompts", asList())
+      .append("firstName", "")
+      .append("lastName", "")
+      .append("displayName", "")
+      .append("smtp", "")
+      .append("tls", "")
+      .append("emailEmail", "")
+      .append("emailPassword", "")
+      );
 
       // Perform the upsert operation
-      users.updateOne(filter, update, new UpdateOptions().upsert(true));
-
-      // Create the update for prompts (empty)
-      update = new Document("$set", new Document("prompts", asList()));
       users.updateOne(filter, update, new UpdateOptions().upsert(true));
 
       String response = "";
