@@ -35,7 +35,9 @@ import java.util.Random;
 
 import static java.util.Arrays.asList;
 
-
+/*
+ * Handles different voice commands to take appropriate actions and updates database of user
+ */
 class CommandHandler {
   List lst;
   PromptFactory pf;
@@ -58,11 +60,16 @@ class CommandHandler {
     System.out.println("Prompt to delete set to: " + selectedPrompt);
   }
 
+  /*
+   * Handles different voice commands
+   */
   String HandlePrompt(String transcriptionFromWhisper) {
     String response = "";
     transcriptionFromWhisper = transcriptionFromWhisper.trim();
     System.out.println(transcriptionFromWhisper);
     
+    // If the voice command was a question, 
+    // it calls a method that gets the chatgpt answer
     if (transcriptionFromWhisper.toLowerCase().indexOf("question") == 0) {
       try {
         response = this.question(this.email, transcriptionFromWhisper);
@@ -157,6 +164,15 @@ class CommandHandler {
     return response;
   }
 
+  /**
+   * Given a voice command with a question, it gets the answer from chatgpt
+   * and updates the user;s browsing history in the database.
+   * @param email
+   * @param transcriptionFromWhisper
+   * @return
+   * @throws IOException
+   * @throws InterruptedException
+   */
   String question(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
     String answer = ChatGPT.getAnswer(transcriptionFromWhisper);
     // upsert this into the database, and pass back the entire user
