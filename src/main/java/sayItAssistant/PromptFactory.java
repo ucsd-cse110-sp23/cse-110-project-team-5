@@ -29,7 +29,7 @@ class PromptFactory {
     Prompt p = new Prompt();
     p.setLabel(question);
     p.setContent(answer);
-    
+    if(p.getContent().contains("Invalid Command: ")) p.setIsInvalidCommand();
     return p;
   }
 }

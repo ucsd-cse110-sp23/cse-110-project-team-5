@@ -28,7 +28,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.json.JsonWriterSettings;
-
+import org.json.JSONObject;
 
 import java.util.Random;
 
@@ -324,14 +324,20 @@ class CommandHandler {
 
     /* create user email using whisper transcription */
   String createEmail(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
-    String answer = ChatGPT.getAnswer(transcriptionFromWhisper);
     // upsert this into the database, and pass back the entire user
     try (MongoClient mongoClient = MongoClients.create(db_uri)) {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
       MongoCollection<Document> users = sayItAssistant.getCollection("users");
 
+      Document doc = users.find(eq("email", email)).first();
+
       // Create the filter
       Document filter = new Document("email", email);
+      String jsonString = doc.toJson().toString();
+      JSONObject jsonObject = new JSONObject(jsonString);
+      String displayName = jsonObject.getString("displayName");
+      String display = "with the signature: \"Best Regards, \n" + displayName + "\"";
+      String answer = ChatGPT.getAnswer(transcriptionFromWhisper + display);
 
       // Create an update document to push a new prompt into the existing "prompts" field
       Document update = new Document("$push", new Document("prompts",
@@ -344,7 +350,7 @@ class CommandHandler {
       System.out.println("Prompt inserted successfully.");
 
       String response = "";
-      Document doc = users.find(eq("email", email)).first();
+      
       // Create response based on matching user email
       if (doc != null) {
           response = doc.toJson();
@@ -369,7 +375,7 @@ class CommandHandler {
       // Create an update document to push a new prompt into the existing "prompts" field
       Document update = new Document("$push", new Document("prompts",
       new Document("question", transcriptionFromWhisper)
-              .append("answer", "Invalid Command: " + transcriptionFromWhisper)));
+              .append("answer", "Invalid Command: " + "\"" + transcriptionFromWhisper + "\"")));
 
       // Perform the update operation
       users.updateOne(filter, update);

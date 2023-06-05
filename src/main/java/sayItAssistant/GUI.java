@@ -148,6 +148,7 @@ class AppFrame extends JFrame {
     content.setFont(new Font("Arial", Font.BOLD, 15));
     content.setForeground(foregroundColor);
     content.setBackground(darkGrey);
+    content.setEditable(false);
     answerPane.add(content);
 
     answerScroll = new JScrollPane(answerPane);

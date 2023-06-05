@@ -5,7 +5,6 @@ import java.io.*;
 import java.util.ArrayList;
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.*;
 import org.json.JSONObject;
@@ -38,6 +37,8 @@ class List extends JPanel {
   JSONParser jp = new JSONParser();
 
   Color backgroundColor = new Color(50, 50, 50);  // Dark gray
+  Color green = new Color(188, 226, 158);;
+  Color darkGray = new Color(100, 100, 100);
 
   List() {
     GridLayout layout = new GridLayout(0, 1);
@@ -51,7 +52,7 @@ class List extends JPanel {
   void update(String jsonString) {
     //clear everything first
     this.clearAll();
-    // Read the json file, and use addPrompt
+    // Read the json file
     JSONObject jsonObject = new JSONObject(jsonString);
     // Access the "prompts" array
     JSONArray promptsArray = jsonObject.getJSONArray("prompts");
@@ -66,13 +67,18 @@ class List extends JPanel {
         // Access question and answer values in each prompt
         String question = prompt.getString("question");
         String answer = prompt.getString("answer");
+        System.out.println(question);
+        System.out.println(answer);
 
         // Create the JPanels
         Prompt p = pf.createPrompt(question, answer);
         addPrompt(p);
 
         if (i == promptsArray.length() - 1) {
-          AppFrame.content.setText(answer);
+          if(p.isInvalidCommand()) {
+            AppFrame.content.setText(p.getContent());
+          }
+          else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
         }
     }
 
@@ -104,7 +110,10 @@ class List extends JPanel {
     for (int i = 0; i < listItems.length; i++) {
       if (listItems[i] instanceof Prompt) {
         ((Prompt) listItems[i]).selected = false;
-        ((Prompt) listItems[i]).setBackground(new Color(100, 100, 100));
+        ((Prompt) listItems[i]).setBackground(darkGray);
+        ((Prompt) listItems[i]).label.setBackground(darkGray);
+        ((Prompt) listItems[i]).label.repaint();
+        ((Prompt) listItems[i]).label.revalidate();
         ((Prompt) listItems[i]).repaint();
         ((Prompt) listItems[i]).revalidate();
       }
@@ -113,38 +122,60 @@ class List extends JPanel {
 
   public void addPrompt(Prompt p) {
     this.add(p);
-
-    // Add selected listener to question
-    p.addMouseListener(
-      new MouseAdapter() {
-        @override
-        public void mousePressed(MouseEvent e) {
-          deselectAll();
-          p.selected = true;
-          selectedPrompt = p;
-
-          try {
-            String query = p.label.getText();
-            URL url = new URL(URL + "?=" + query);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("DELETE");
-
-
-            BufferedReader in = new BufferedReader(
-              new InputStreamReader(conn.getInputStream())
-            );
-            String response = in.readLine();
-            in.close();
-          } catch (Exception ex) {
-            ex.printStackTrace();
-          }
-          p.setBackground(new Color(188, 226, 158));
+    MouseAdapter ma = new MouseAdapter() {
+      @override
+      public void mousePressed(MouseEvent e) {
+        deselectAll();
+        p.selected = true;
+        selectedPrompt = p;
+        p.label.setBackground(green);
+        p.setBackground(green);
+        if(p.isInvalidCommand()) {
           AppFrame.content.setText(p.getContent());
-          repaint();
-          revalidate();
         }
+        else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
+        p.label.repaint();
+        p.label.revalidate();
+        repaint();
+        revalidate();
       }
-    );
+    };      
+    p.addMouseListener(ma);
+    p.label.addMouseListener(ma);    
+    // Add selected listener to question
+    // p.addMouseListener(
+    //   new MouseAdapter() {
+    //     @override
+    //     public void mousePressed(MouseEvent e) {
+    //       
+    //       p.selected = true;
+    //       selectedPrompt = p;
+
+    //       try {
+    //         String query = p.label.getText();
+    //         URL url = new URL(URL + "?=" + query);
+    //         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    //         conn.setRequestMethod("DELETE");
+
+
+    //         BufferedReader in = new BufferedReader(
+    //           new InputStreamReader(conn.getInputStream())
+    //         );
+    //         String response = in.readLine();
+    //         in.close();
+    //       } catch (Exception ex) {
+    //         ex.printStackTrace();
+    //       }
+    //       p.setBackground(new Color(188, 226, 158));
+    //       if(p.isInvalidCommand()) {
+    //         AppFrame.content.setText(p.getContent());
+    //       }
+    //       else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
+    //       repaint();
+    //       revalidate();
+    //     }
+    //   }
+    // );
     numPrompts += 1;
     setPreferredSize(new Dimension(400, 105 * this.numPrompts));
     repaint();
@@ -153,6 +184,7 @@ class List extends JPanel {
   }
 
   public int deleteSelected() {
+    //delete from GUI
     findSelected();
     if (selectedPrompt == null) {
       System.out.println("selectPrompt is null");
@@ -162,6 +194,8 @@ class List extends JPanel {
     this.remove(selectedPrompt);
     repaint();
     revalidate();
+    //delete from database
+
     this.selectedPrompt = null;
     this.updateNumbers();
     return index;
