@@ -271,6 +271,11 @@ class CommandHandler {
     return response;
   }
 
+  /**
+   * send email to user 
+   * @param transcription
+   * @return response
+   */
   String sendEmail(String transcription) {
     TLSEmail tls = new TLSEmail();
     String status = tls.send();
@@ -309,6 +314,11 @@ class CommandHandler {
 
   }
   
+  /**
+   * Set up the email detail for the user
+   * @param transcription
+   * @return response
+   */
   String setUpEmail(String transcription) {
     String response;
     // create a new pop up window, handle all that stuff in its class
@@ -344,7 +354,14 @@ class CommandHandler {
     }
   }
 
-    /* create user email using whisper transcription */
+    /**
+     *  create user email using whisper transcription
+     * @param email
+     * @param transcriptionFromWhisper
+     * @return response
+     * @throws IOException
+     * @throws InterruptedException
+     */
   String createEmail(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
     String answer = ChatGPT.getAnswer(transcriptionFromWhisper);
     // upsert this into the database, and pass back the entire user
