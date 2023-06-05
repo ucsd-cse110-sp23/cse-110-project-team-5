@@ -239,6 +239,12 @@ class CommandHandler {
     return response;
   }
 
+  /**
+   * Given a voice command to clear all prompts, it clears all prompts from the database.
+   * @param email
+   * @param transcriptionFromWhisper
+   * @return
+   */
   String clearAll(String email, String transcriptionFromWhisper) {
     String response = "Clear All Was Called";
     try (MongoClient mongoClient = MongoClients.create(db_uri)) {
