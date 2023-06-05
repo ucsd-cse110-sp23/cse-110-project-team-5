@@ -158,26 +158,6 @@ class List extends JPanel {
     };      
     p.addMouseListener(ma);
     p.label.addMouseListener(ma);    
-    // Add selected listener to question
-    // p.addMouseListener(
-    //   new MouseAdapter() {
-    //     @override
-    //     public void mousePressed(MouseEvent e) {
-    //       
-    //       p.selected = true;
-    //       selectedPrompt = p;
-
-
-    //       p.setBackground(new Color(188, 226, 158));
-    //       if(p.isInvalidCommand()) {
-    //         AppFrame.content.setText(p.getContent());
-    //       }
-    //       else AppFrame.content.setText(p.getLabel() + "\n\n" + p.getContent());
-    //       repaint();
-    //       revalidate();
-    //     }
-    //   }
-    // );
     numPrompts += 1;
     setPreferredSize(new Dimension(400, 105 * this.numPrompts));
     repaint();
