@@ -111,6 +111,7 @@ class CreateAccountPage extends JFrame {
                     // This creates account on database and gives commandhandler on server this users email
                     createAccount(email, password);
 
+
                     
                 } else {
                     JOptionPane.showMessageDialog(CreateAccountPage.this, "Passwords do not match!");
@@ -140,6 +141,8 @@ class CreateAccountPage extends JFrame {
 
             // Since we are creating account, we will always succeed
             AppFrame app = new AppFrame();
+            // close Create Account page
+            this.dispose();
             app.list.update(jsonString);
             result = true;
           } catch (Exception ex) {
@@ -272,6 +275,7 @@ class LoginPage extends JFrame {
             }
             else {
                 AppFrame app = new AppFrame();
+                this.dispose();
                 app.list.update(jsonString);
                 result = true;
             }

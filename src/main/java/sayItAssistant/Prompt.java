@@ -25,6 +25,7 @@ class Prompt extends JPanel {
   JTextField label;
   String content;
   boolean selected;
+  boolean isInvalidCommand = false;
 
   Color darkGray = new Color(100, 100, 100);
   Color green = new Color(188, 226, 158);
@@ -44,27 +45,21 @@ class Prompt extends JPanel {
     label = new JTextField(""); // create question name text field
     label.setBorder(BorderFactory.createEmptyBorder()); // remove border of text field
     label.setBackground(darkGray); // set background color of text field
+    label.setEditable(false);
 
     this.add(label, BorderLayout.CENTER);
     revalidate();
 
-    addMouseListener();
-  }
-
-  public void addMouseListener() {
-    this.addMouseListener(
-      new MouseAdapter() {
-        @override
-        public void mousePressed(MouseEvent e) {
-          selected = true;
-          setBackground(green);
-          repaint();
-          revalidate();
-        }
-      }
-    );
   }
   
+  public boolean isInvalidCommand() {
+    return this.isInvalidCommand;
+  }
+
+  public void setIsInvalidCommand() {
+    this.isInvalidCommand = true;
+  }
+
   public void changeIndex(int num) {
     this.index.setText(num + ""); // num to String
     this.revalidate(); // refresh
@@ -86,6 +81,10 @@ class Prompt extends JPanel {
 
   public void setLabel(String transcriptionFromWhisper) {
     this.label.setText(transcriptionFromWhisper);
+  }
+
+  public String getLabel() {
+    return this.label.getText();
   }
 
   public boolean isSelected() {
