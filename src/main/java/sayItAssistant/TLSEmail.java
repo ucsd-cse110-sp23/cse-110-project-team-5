@@ -21,6 +21,28 @@ import java.io.FileNotFoundException;
 
 public class TLSEmail {
 
+	private String fromEmail;
+	private String toEmail;
+	private String displayName;
+	private String password;
+	private String smtpHost;
+	private String tlsPort;
+
+	private String subject;
+	private String body;
+
+	public void setEmailConfig(String fromEmail, String toEmail, String displayName, 
+     String password, String smtpHost, String tlsPort, String subject, String body) {
+		this.fromEmail = fromEmail;
+		this.toEmail = toEmail;
+		this.displayName = displayName;
+		this.password = password;
+		this.smtpHost = smtpHost;
+		this.tlsPort = tlsPort;
+
+		this.subject = subject;
+		this.body = body;
+	}
 	/**
 	   Outgoing Mail (SMTP) Server
 	   requires TLS or SSL: smtp.gmail.com (use authentication)
@@ -28,36 +50,17 @@ public class TLSEmail {
 	   Port for TLS/STARTTLS: 587
 	 */
 	public String send() {
-
-        File setup = new File("src/main/java/sayItAssistant/EmailSetupInfo.txt");
-        String setupInfo[] = new String[7];
-        try{
-            Scanner myReader = new Scanner(setup);
-            int i = 0;
-            while (myReader.hasNextLine()) {
-                setupInfo[i] = myReader.nextLine();
-                i++;
-            }
-            System.out.println(setupInfo[0]);
-            myReader.close();
-        }
-        catch (FileNotFoundException e) {
-            // Handle the exception (e.g., print an error message)
-            e.printStackTrace();
-        }
-        
-		final String fromEmail = "sups1237@gmail.com"; //requires valid gmail id
-		final String password = "ljkldeuetmesjlql"; // correct password for gmail id
-		final String toEmail = "xicoreyes513@gmail.com"; // can be any email id 
 		
 		System.out.println("TLSEmail Start");
 		Properties props = new Properties();
-		props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
-		props.put("mail.smtp.port", "587"); //TLS Port
+		// props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
+		props.put("mail.smtp.host", this.smtpHost);
+		// props.put("mail.smtp.port", "587"); //TLS Port
+		props.put("mail.smtp.port", this.tlsPort); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
 		props.put("mail.debug", "true");
-		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		props.put("mail.smtp.ssl.trust", this.smtpHost);
 		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		
                 //create Authenticator object to pass in Session.getInstance argument
@@ -69,7 +72,7 @@ public class TLSEmail {
 		};
 		Session session = Session.getInstance(props, auth);
 		
-		return EmailUtil.sendEmail(session, toEmail,"TLSEmail Testing Subject", "TLSEmail Testing Body");
+		return EmailUtil.sendEmail(session, fromEmail, toEmail, displayName, smtpHost, subject, body);
 		
 	}
 	

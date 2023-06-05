@@ -31,10 +31,12 @@ public class EmailUtil {
 	 * Utility method to send simple HTML email
 	 * @param session
 	 * @param toEmail
+	 * @param displayName
+	 * @param smtpHost
 	 * @param subject
 	 * @param body
 	 */
-	public static String sendEmail(Session session, String toEmail, String subject, String body){
+	public static String sendEmail(Session session, String fromEmail, String toEmail, String displayName, String smtpHost, String subject, String body){
 		try
 	    {
 	      MimeMessage msg = new MimeMessage(session);
@@ -43,9 +45,9 @@ public class EmailUtil {
 	      msg.addHeader("format", "flowed");
 	      msg.addHeader("Content-Transfer-Encoding", "8bit");
 
-	      msg.setFrom(new InternetAddress("no_reply@example.com", "NoReply-JD"));
+	      msg.setFrom(new InternetAddress(fromEmail, displayName));
 
-	      msg.setReplyTo(InternetAddress.parse("no_reply@example.com", false));
+	      msg.setReplyTo(InternetAddress.parse(fromEmail, false));
 
 	      msg.setSubject(subject, "UTF-8");
 
@@ -57,11 +59,12 @@ public class EmailUtil {
 	      System.out.println("Message is ready");
     	  Transport.send(msg);
 
-	      return "Email Sent Successfully!!";
+	      return "Email successfully sent.";
 	    }
 	    catch (Exception e) {
 	      e.printStackTrace();
-		  return "Email error";
+		  return "Email error \n"
+		  + "SMTP Host: " + smtpHost + "\n";
 	    }
 	}
 }

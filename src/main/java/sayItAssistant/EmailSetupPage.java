@@ -20,6 +20,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.json.JsonWriterSettings;
+import org.json.JSONObject;
 
 class EmailSetupPage extends JFrame {
     String emailOfUser;
@@ -47,68 +48,79 @@ class EmailSetupPage extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 10, 10));
         panel.setBackground(darkGrey);
-        File setup = new File("src/main/java/sayItAssistant/EmailSetupInfo.txt");
-        String setupInfo[] = new String[7];
-        try{
-            Scanner myReader = new Scanner(setup);
-            int i = 0;
-            while (myReader.hasNextLine()) {
-                setupInfo[i] = myReader.nextLine();
-                i++;
-            }
-            System.out.println(setupInfo[0]);
-            myReader.close();
+
+        //get firstName, lastName, displayName, smtp host, tls port, email, password from database
+        String firstName = "";
+        String lastName = "";
+        String displayName = "";
+        String smtpHost = "";
+        String tlsPort = "";
+        String emailEmail = "";
+        String emailPassword = "";
+        try (MongoClient mongoClient = MongoClients.create(db_uri)) {
+            MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
+            MongoCollection<Document> users = sayItAssistant.getCollection("users");
+      
+      
+            Document doc = users.find(eq("email", email)).first();
+      
+            String jsonString = doc.toJson().toString();
+            JSONObject jsonObject = new JSONObject(jsonString);
+            firstName = jsonObject.getString("firstName");
+            lastName = jsonObject.getString("lastName");
+            displayName = jsonObject.getString("displayName");
+            smtpHost = jsonObject.getString("smtp");
+            tlsPort = jsonObject.getString("tls");
+            emailEmail = jsonObject.getString("emailEmail");
+            emailPassword = jsonObject.getString("emailPassword");
         }
-        catch (FileNotFoundException e) {
-            // Handle the exception (e.g., print an error message)
-            e.printStackTrace();
-        }
+
 
         JLabel firstNameLabel = new JLabel("First Name:");
         firstNameField = new JTextField(20);
-        firstNameField.setText(setupInfo[0]);
+        firstNameField.setText(firstName);
         panel.add(firstNameLabel);
         panel.add(firstNameField);
         firstNameLabel.setForeground(foregroundColor);
 
         JLabel lastNameLabel = new JLabel("Last Name:");
         lastNameField = new JTextField(20);
-        lastNameField.setText(setupInfo[1]);
+        lastNameField.setText(lastName);
         lastNameLabel.setForeground(foregroundColor);
         panel.add(lastNameLabel);
         panel.add(lastNameField);
 
         JLabel displayNameLabel = new JLabel("Display Name:");
         displayNameField = new JTextField(20);
-        displayNameField.setText(setupInfo[2]);
+        displayNameField.setText(displayName);
         displayNameLabel.setForeground(foregroundColor);
         panel.add(displayNameLabel);
         panel.add(displayNameField);
 
         JLabel smtpLabel = new JLabel("SMTP Host:");
         smtpField = new JTextField(20);
-        smtpField.setText(setupInfo[3]);
+        smtpField.setText(smtpHost);
         panel.add(smtpLabel);
         panel.add(smtpField);
         smtpLabel.setForeground(foregroundColor);
 
         JLabel tlsLabel = new JLabel("TLS Port:");
         tlsField = new JTextField(20);
-        tlsField.setText(setupInfo[4]);
+        tlsField.setText(tlsPort);
         panel.add(tlsLabel);
         panel.add(tlsField);
         tlsLabel.setForeground(foregroundColor);
 
         JLabel emailLabel = new JLabel("Email:");
         emailField = new JTextField(20);
-        emailField.setText(setupInfo[5]);
+        emailField.setText(emailEmail);
         panel.add(emailLabel);
         panel.add(emailField);
         emailLabel.setForeground(foregroundColor);
 
         JLabel passwordLabel = new JLabel("Password:");
         passwordField = new JPasswordField(20);
-        passwordField.setText(setupInfo[6]);
+        passwordField.setText(emailPassword);
         passwordLabel.setForeground(foregroundColor);
         panel.add(passwordLabel);
         panel.add(passwordField);
