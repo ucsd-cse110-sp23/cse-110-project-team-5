@@ -1,4 +1,7 @@
 //package src.main.java.sayItAssistant;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,8 +15,7 @@ import java.io.*;
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.util.Scanner; // Import the Scanner class to read text files
 import java.net.*;
-import org.json.JSONObject;
-import org.json.JSONArray;
+
 
 
 class CreateAccountPage extends JFrame {

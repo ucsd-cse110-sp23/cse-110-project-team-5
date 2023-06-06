@@ -1,21 +1,26 @@
 // package src.main.java.sayItAssistant;
+// import java.util.ArrayList;
+// import org.json.simple.JSONArray;
+// import org.json.simple.JSONObject;
+// import org.json.simple.parser.ParseException;
+// import javax.swing.border.Border;
+// import java.io.File;
+// import javax.swing.border.EmptyBorder;
+// import javax.imageio.ImageIO;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
+<<<<<<< Updated upstream
 import java.util.ArrayList;
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+=======
+>>>>>>> Stashed changes
 import org.json.simple.parser.*;
 import org.json.JSONObject;
 import org.json.JSONArray;
-
-
-import javax.swing.border.Border;
-import java.io.File;
-
-import javax.swing.border.EmptyBorder;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.net.*;
