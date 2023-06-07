@@ -74,6 +74,20 @@ public class MS2Tests {
     assertTrue(result);
   }
 
+  @Test
+  void US2Scenario1() {
+    CommandHandler ch = new CommandHandler();
+
+    String email = "email@gmail.com";
+    String password = "1234";
+
+    String createdAccount = ch.createAccount(email, password);
+    
+    assertEquals(createdAccount, ch.getAccount(email, password));
+    // boolean result = lp.logIn(email, password);
+    // assertTrue(result);
+  }
+
   // @Test
   //   public void US2Scenario1() throws Exception {
   
