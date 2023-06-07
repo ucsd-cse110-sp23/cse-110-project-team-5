@@ -22,7 +22,7 @@ class CreateAccountPage extends JFrame {
     private JTextField emailTextField;
     private JPasswordField passwordField;
     private JPasswordField verifyPasswordField;
-    public final String URL = "http://localhost:8100/";
+    public static String URL = "http://localhost:8100/";
     Color red = new Color(255, 0, 0);
     Color darkRed = new Color (200, 0, 0);
     Color darkGrey = new Color (50,50,50);
@@ -401,10 +401,17 @@ public class StartupPage extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new StartupPage();
-            }
-        });
+        StartupPage sp = new StartupPage();
+        String result = LoginPage.autoLoad();
+        if (result != null) {
+            String email = result.substring(0, result.indexOf(" "));
+            String password = result.substring(result.indexOf(" ") + 1);
+            System.out.println("email: " + email);
+            System.out.println("password: " + password);
+            LoginPage lp = new LoginPage();
+            lp.emailTextField.setText(email);
+            lp.passwordField.setText(password);
+            lp.logIn(email, password);
+        }
     }
 }
