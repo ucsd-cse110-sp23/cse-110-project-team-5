@@ -107,8 +107,6 @@ public class MS2Tests {
     String createdAccount = ch.createAccount(email, password);
     
     assertEquals(createdAccount, ch.getAccount(email, password));
-    // boolean result = lp.logIn(email, password);
-    // assertTrue(result);
   }
 
   
