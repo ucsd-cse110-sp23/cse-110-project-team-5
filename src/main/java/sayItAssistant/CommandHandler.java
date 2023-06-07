@@ -26,7 +26,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.eq;
-<<<<<<< Updated upstream
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
@@ -39,12 +38,10 @@ import java.util.Random;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-=======
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.json.JSONObject;
 import org.json.JSONArray;
->>>>>>> Stashed changes
 import static java.util.Arrays.asList;
 
 /*
