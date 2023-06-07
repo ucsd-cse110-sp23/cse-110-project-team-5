@@ -22,7 +22,7 @@ class CreateAccountPage extends JFrame {
     private JTextField emailTextField;
     private JPasswordField passwordField;
     private JPasswordField verifyPasswordField;
-    public static String URL = "http://localhost:8100/";
+    public String URL = "http://localhost:8100/";
     Color red = new Color(255, 0, 0);
     Color darkRed = new Color (200, 0, 0);
     Color darkGrey = new Color (50,50,50);

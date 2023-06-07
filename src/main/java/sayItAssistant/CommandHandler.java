@@ -401,19 +401,6 @@ class CommandHandler {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
       MongoCollection<Document> users = sayItAssistant.getCollection("users");
 
-      // Create the filter
-      Document filter = new Document("email", email);
-
-
-      // Create an update document to push a new prompt into the existing "prompts" field
-      Document update = new Document("$push", new Document("prompts",
-      new Document("question", transcription)
-      .append("answer", "")));
-
-      // Perform the update operation
-      users.updateOne(filter, update);
-
-
       response = "";
       Document doc = users.find(eq("email", email)).first();
       if (doc != null) {
