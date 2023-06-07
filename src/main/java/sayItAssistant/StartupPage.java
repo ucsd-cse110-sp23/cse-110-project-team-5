@@ -22,7 +22,7 @@ class CreateAccountPage extends JFrame {
     private JTextField emailTextField;
     private JPasswordField passwordField;
     private JPasswordField verifyPasswordField;
-    public final String URL = "http://localhost:8100/";
+    public String URL = "http://localhost:8100/";
     Color red = new Color(255, 0, 0);
     Color darkRed = new Color (200, 0, 0);
     Color darkGrey = new Color (50,50,50);
@@ -168,8 +168,8 @@ class CreateAccountPage extends JFrame {
 
 
 class LoginPage extends JFrame {
-    private JTextField emailTextField;
-    private JPasswordField passwordField;
+    JTextField emailTextField;
+    JPasswordField passwordField;
     JToggleButton autoLogin;
     Color red = new Color(255, 0, 0);
     Color darkRed = new Color (200, 0, 0);
@@ -289,7 +289,7 @@ class LoginPage extends JFrame {
         return result;
     }
 
-    public boolean autoLoad() {
+    public static String autoLoad() {
         try {
             File myObj = new File("src/main/java/sayItAssistant/LoginInfo.txt");
             Scanner myReader = new Scanner(myObj);
@@ -298,20 +298,18 @@ class LoginPage extends JFrame {
             String password = "";
             if (myObj.length() == 0) {
                 myReader.close();
-                return false;
+                return null;
             }
             email = myReader.nextLine();
             password = myReader.nextLine();
   
             myReader.close();
 
-            this.emailTextField.setText(email);
-            this.passwordField.setText(password);
-            return true;
+            return email + " " + password;
           } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
-            return false;
+            return null;
           }
     }
 
@@ -377,8 +375,14 @@ public class StartupPage extends JFrame {
                                 LoginPage page = new LoginPage();
                                 page.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-                                Boolean result = page.autoLoad();
-                                if (result) {
+                                String result = page.autoLoad();
+                                String email = result.substring(0, result.indexOf(" "));
+                                String password = result.substring(result.indexOf(" ") + 1);
+                                System.out.println("email: " + email);
+                                System.out.println("password: " + password);
+                                page.emailTextField.setText(email);
+                                page.passwordField.setText(password);
+                                if (result != null) {
                                     page.autoLogin.setSelected(true);
                                     page.autoLoginSelect();
                                 }
@@ -397,10 +401,17 @@ public class StartupPage extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new StartupPage();
-            }
-        });
+        StartupPage sp = new StartupPage();
+        String result = LoginPage.autoLoad();
+        if (result != null) {
+            String email = result.substring(0, result.indexOf(" "));
+            String password = result.substring(result.indexOf(" ") + 1);
+            System.out.println("email: " + email);
+            System.out.println("password: " + password);
+            LoginPage lp = new LoginPage();
+            lp.emailTextField.setText(email);
+            lp.passwordField.setText(password);
+            lp.logIn(email, password);
+        }
     }
 }

@@ -54,7 +54,7 @@ class CommandHandler {
   String email;
   String selectedPrompt;
   //Database db;
-  public final String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
+  public final String db_uri = "mongodb://xicoreyes513:gtejvn59@ac-yy71iyh-shard-00-00.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-01.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-02.pr6de6a.mongodb.net:27017/?ssl=true&replicaSet=atlas-10r8w7-shard-0&authSource=admin&retryWrites=true&w=majority";
 
   CommandHandler() {
     
@@ -189,7 +189,13 @@ class CommandHandler {
    * @throws InterruptedException
    */
   String question(String email, String transcriptionFromWhisper) throws IOException, InterruptedException {
-    String answer = ChatGPT.getAnswer(transcriptionFromWhisper);
+    String answer = "";
+    if (email.equals("MockEmail")) {
+      answer = MockChatGPT.getAnswer(transcriptionFromWhisper);
+    }
+    else {
+      answer = ChatGPT.getAnswer(transcriptionFromWhisper);
+    }
     // upsert this into the database, and pass back the entire user
     try (MongoClient mongoClient = MongoClients.create(db_uri)) {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
@@ -395,19 +401,6 @@ class CommandHandler {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
       MongoCollection<Document> users = sayItAssistant.getCollection("users");
 
-      // Create the filter
-      Document filter = new Document("email", email);
-
-
-      // Create an update document to push a new prompt into the existing "prompts" field
-      Document update = new Document("$push", new Document("prompts",
-      new Document("question", transcription)
-      .append("answer", "")));
-
-      // Perform the update operation
-      users.updateOne(filter, update);
-
-
       response = "";
       Document doc = users.find(eq("email", email)).first();
       if (doc != null) {
@@ -472,6 +465,10 @@ class CommandHandler {
   }
 
   String wrongCommand(String email, String transcriptionFromWhisper) {
+    if (email.equals("MockEmail")) {
+      return "wrongCommand";
+    }
+    
     // upsert this into the database, and pass back the entire user
     try (MongoClient mongoClient = MongoClients.create(db_uri)) {
       MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");

@@ -123,7 +123,48 @@ public class MockWhisper {
 
         int responseCode = connection.getResponseCode();
 
-        String questionTranscription = "Is this a mock question?";
+        String questionTranscription = "question?";
+
+        if (responseCode ==  HttpURLConnection.HTTP_OK) {
+            questionTranscription = handleSuccessResponse(connection);
+        } else {
+            handleErrorResponse(connection);
+        }
+
+        connection.disconnect();
+
+        return questionTranscription;
+    }
+
+    public static String getFalseQuestion() throws IOException {
+        String fileName = Record.getRecordingFileName();
+        File file = new File(fileName);
+        URL url = new URL(API_ENDPOINT);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        String boundary = "Boundary-" + System.currentTimeMillis();
+        connection.setRequestProperty(
+        "Content-Type",
+        "multipart/form-data; boundary=" + boundary
+        );
+        //connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+        connection.setRequestProperty("Authorization", "Bearer " + "mock_api_key"); //mock api key
+        
+        OutputStream outputStream = connection.getOutputStream();
+        
+        writeParameterToOutputStream(outputStream, "model", MODEL, boundary);
+        
+        writeFileToOutputStream(outputStream, file, boundary);
+
+        outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
+
+        outputStream.flush();
+        outputStream.close();
+
+        int responseCode = connection.getResponseCode();
+
+        String questionTranscription = "wrong question?";
 
         if (responseCode ==  HttpURLConnection.HTTP_OK) {
             questionTranscription = handleSuccessResponse(connection);
