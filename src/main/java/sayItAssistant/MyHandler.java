@@ -93,7 +93,6 @@ public class MyHandler implements HttpHandler{
         }
         System.out.println(response);
         return response;
-        // return response
     }
 
     private String handlePost(HttpExchange httpExchange) throws IOException {

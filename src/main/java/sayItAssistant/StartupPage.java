@@ -159,7 +159,7 @@ class CreateAccountPage extends JFrame {
         if (password.equals(verifyPassword)) {
             result = true;
         }
-        if (email == null || password == null || verifyPassword == null) {
+        if (email == null || password == null || verifyPassword == null || email == "" || password == "" || verifyPassword == "") {
             result = false;
         }
         return result;

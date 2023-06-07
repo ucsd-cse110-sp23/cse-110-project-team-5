@@ -50,11 +50,11 @@ import static java.util.Arrays.asList;
 class CommandHandler {
   List lst;
   PromptFactory pf;
-  AppFrame app;
+  //AppFrame app;
   String email;
   String selectedPrompt;
   //Database db;
-  public final String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
+  public final String db_uri = "mongodb://xicoreyes513:gtejvn59@ac-yy71iyh-shard-00-00.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-01.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-02.pr6de6a.mongodb.net:27017/?ssl=true&replicaSet=atlas-10r8w7-shard-0&authSource=admin&retryWrites=true&w=majority";
 
   CommandHandler() {
     
