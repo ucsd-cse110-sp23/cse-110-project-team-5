@@ -37,6 +37,7 @@ public class EmailUtil {
 	 * @param body
 	 */
 	public static String sendEmail(Session session, String fromEmail, String toEmail, String displayName, String smtpHost, String subject, String body){
+		
 		try
 	    {
 	      MimeMessage msg = new MimeMessage(session);

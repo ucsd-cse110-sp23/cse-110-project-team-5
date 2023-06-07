@@ -23,7 +23,7 @@ import org.bson.json.JsonWriterSettings;
 import org.json.JSONObject;
 
 class EmailSetupPage extends JFrame {
-    String emailOfUser;
+    public static String emailOfUser;
     private JTextField firstNameField;
     private JTextField lastNameField;
     private JTextField displayNameField;
@@ -36,7 +36,7 @@ class EmailSetupPage extends JFrame {
     Color darkGrey = new Color (50,50,50);
     Color foregroundColor = new Color(200, 200, 200);
     Color lightGrey = new Color(100, 100, 100);
-    public final String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
+    public static String db_uri = "mongodb://xicoreyes513:gtejvn59@ac-yy71iyh-shard-00-00.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-01.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-02.pr6de6a.mongodb.net:27017/?ssl=true&replicaSet=atlas-10r8w7-shard-0&authSource=admin&retryWrites=true&w=majority";
 
     public EmailSetupPage(String email) {
         super("Email Setup Page");
@@ -169,8 +169,13 @@ class EmailSetupPage extends JFrame {
         setVisible(true);
     }
 
-    Boolean uploadEmailDetails(String firstName, String lastName, String displayName,
+    public static Boolean uploadEmailDetails(String firstName, String lastName, String displayName,
         String smtp, String tls, String emailEmail, String emailPassword) {
+
+        if (firstName == null || lastName == null || displayName == null || smtp == null || tls == null ||
+        emailEmail == null || emailPassword == null) {
+            return false;
+        }
         try (MongoClient mongoClient = MongoClients.create(db_uri)) {
             MongoDatabase sayItAssistant = mongoClient.getDatabase("say_it_assistant");
             MongoCollection<Document> users = sayItAssistant.getCollection("users");
