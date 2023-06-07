@@ -1,24 +1,23 @@
 // package src.main.java.sayItAssistant;
-// import java.awt.event.MouseAdapter;
-// import java.awt.event.MouseEvent;
-// import java.io.BufferedReader;
-// import java.io.FileReader;
-// import java.io.FileWriter;
-// import java.io.InputStreamReader;
-// import java.io.OutputStreamWriter;
-// import java.util.ArrayList;
-// import javax.swing.border.Border;
-// import java.io.File;
-// import javax.swing.border.EmptyBorder;
-// import javax.imageio.ImageIO;
-// import java.awt.*;
-// import java.net.*;
-// import java.net.http.HttpResponse.ResponseInfo;
-// import com.mongodb.client.model.Filters;
-// import com.mongodb.client.model.Projections;
-// import org.bson.json.JsonWriterSettings;
-// import java.util.Random;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import javax.swing.border.Border;
+import java.io.File;
+import javax.swing.border.EmptyBorder;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.net.*;
+import java.net.http.HttpResponse.ResponseInfo;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import org.bson.json.JsonWriterSettings;
+import java.util.Random;
 import javax.swing.*;
 import java.io.IOException;
 import com.mongodb.client.MongoClient;
@@ -26,21 +25,13 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.eq;
-<<<<<<< Updated upstream
-
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.json.JsonWriterSettings;
-
-
 import java.util.Random;
-
-
-=======
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.json.JSONObject;
 import org.json.JSONArray;
->>>>>>> Stashed changes
 import static java.util.Arrays.asList;
 
 /*

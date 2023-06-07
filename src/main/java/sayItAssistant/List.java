@@ -11,14 +11,11 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
-<<<<<<< Updated upstream
 import java.util.ArrayList;
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-=======
->>>>>>> Stashed changes
 import org.json.simple.parser.*;
 import org.json.JSONObject;
 import org.json.JSONArray;

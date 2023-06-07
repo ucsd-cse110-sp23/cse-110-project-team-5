@@ -4,13 +4,13 @@
  */
 
 //package com.journaldev.mail;
-// import java.io.File;
-// import java.util.Scanner;
-// import java.io.FileReader;
-// import java.io.FileWriter;
-// import java.io.IOException;
-// import java.io.FileOutputStream;
-// import java.io.FileNotFoundException;
+import java.io.File;
+import java.util.Scanner;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 
 import java.util.Properties;
 import javax.mail.Authenticator;
