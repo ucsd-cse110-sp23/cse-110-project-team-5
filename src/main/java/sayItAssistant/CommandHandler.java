@@ -402,16 +402,16 @@ class CommandHandler {
       MongoCollection<Document> users = sayItAssistant.getCollection("users");
 
       // Create the filter
-      Document filter = new Document("email", email);
+      // Document filter = new Document("email", email);
 
 
-      // Create an update document to push a new prompt into the existing "prompts" field
-      Document update = new Document("$push", new Document("prompts",
-      new Document("question", transcription)
-      .append("answer", "")));
+      // // Create an update document to push a new prompt into the existing "prompts" field
+      // Document update = new Document("$push", new Document("prompts",
+      // new Document("question", transcription)
+      // .append("answer", "")));
 
-      // Perform the update operation
-      users.updateOne(filter, update);
+      // // Perform the update operation
+      // users.updateOne(filter, update);
 
 
       response = "";
