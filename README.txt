@@ -31,7 +31,7 @@ Commands:
 
 4. "Set Up Email" brings up a pop up window in which you can fill in your email information to send emails
 
-5. 
+5. Begin your prompt with "Create Email" and then follow this command with what you would like your contents to say
 
 6. "Send Email" sends the selected email 
 
