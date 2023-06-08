@@ -36,7 +36,7 @@ class EmailSetupPage extends JFrame {
     Color darkGrey = new Color (50,50,50);
     Color foregroundColor = new Color(200, 200, 200);
     Color lightGrey = new Color(100, 100, 100);
-    public static String db_uri = "mongodb://xicoreyes513:gtejvn59@ac-yy71iyh-shard-00-00.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-01.pr6de6a.mongodb.net:27017,ac-yy71iyh-shard-00-02.pr6de6a.mongodb.net:27017/?ssl=true&replicaSet=atlas-10r8w7-shard-0&authSource=admin&retryWrites=true&w=majority";
+    public static String db_uri = "mongodb+srv://xicoreyes513:gtejvn59@gettingstarted.pr6de6a.mongodb.net/?retryWrites=true&w=majority";
 
     public EmailSetupPage(String email) {
         super("Email Setup Page");

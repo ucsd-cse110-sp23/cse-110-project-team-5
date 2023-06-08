@@ -413,5 +413,6 @@ public class StartupPage extends JFrame {
             lp.passwordField.setText(password);
             lp.logIn(email, password);
         }
+        // StartupPage sp = new StartupPage();
     }
 }

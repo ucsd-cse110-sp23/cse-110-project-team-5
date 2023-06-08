@@ -33,7 +33,7 @@ Commands:
 
 5. Begin your prompt with "Create Email" and then follow this command with what you would like your contents to say
 
-6. "Send Email" sends the selected email 
+6. "Send Email" sends the selected email to the email you specify after the prompt
 
 
   
